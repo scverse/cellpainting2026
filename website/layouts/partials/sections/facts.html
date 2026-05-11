@@ -45,6 +45,23 @@
             {{ end }}
           </div>
 
+          <!-- Application -->
+          {{ if or .Site.Params.applicationDeadline .Site.Params.acceptanceNotification }}
+            <div class="fact-card">
+              <div class="fact-card__icon"><i class="bi bi-pencil-square" aria-hidden="true"></i></div>
+              <div class="fact-card__label">Application</div>
+              <div class="fact-card__value">
+                {{ with .Site.Params.applicationDeadline }}Apply by {{ . }}{{ end }}
+                {{ with .Site.Params.acceptanceNotification }}<br /><span style="font-weight:400;color:#777">Notifications: {{ . }}</span>{{ end }}
+              </div>
+              {{ with .Site.Params.cta }}
+                <a href="{{ .url }}" class="chip" target="_blank" rel="noopener">
+                  <i class="bi bi-box-arrow-up-right" aria-hidden="true"></i> {{ .label }}
+                </a>
+              {{ end }}
+            </div>
+          {{ end }}
+
           <!-- GitHub -->
           {{ with .Site.Params.githubRepo }}
             <div class="fact-card">
