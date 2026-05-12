@@ -1,12 +1,12 @@
-baseURL = "https://scverse.github.io/morphology2026/"
+baseURL = "https://scverse.github.io/cellpainting2026/"
 languageCode = "en-us"
-title = "scverse x morphology"
+title = "scverse x cellpainting"
 
 # ─── Event identity ──────────────────────────────────────────────────────────
 [params]
-  eventName     = "scverse x morphology 2026"
+  eventName     = "scverse x cellpainting 2026"
   eventSeries   = "Unifying Omics Hackathon Series"
-  eventTagline  = "Bridging scverse and morphological profiling communities at the intersection of spatial omics, phenomics, and multi-omics."
+  eventTagline  = "Bridging scverse and Cell Painting communities at the intersection of image-based profiling, phenomics, and single-cell perturbation analysis."
   eventDates    = "September 2 - 4, 2026"
   eventStart    = "2026-09-02"  # ISO date — used for calendar links
   eventEnd      = "2026-09-04"
@@ -20,9 +20,9 @@ title = "scverse x morphology"
   heroSwirl     = "/img/hero/swirl.png"  # Decorative swirl overlay in the hero
 
   calendarURL   = ""            # Google Calendar / .ics URL
-  githubRepo    = "https://github.com/scverse/morphology2026"
-  contactEmail  = "morphology2026@scverse.org"
-  zulipChannel  = "https://scverse.zulipchat.com/#narrow/channel/591503-2026-09.3A-hackathon-morphology"
+  githubRepo    = "https://github.com/scverse/cellpainting2026"
+  contactEmail  = "cellpainting2026@scverse.org"
+  zulipChannel  = "https://scverse.zulipchat.com/#narrow/channel/591503-2026-09.3A-hackathon-cellpainting"
   linkedinURL   = "https://www.linkedin.com/company/scverse/"
 
   # Primary call-to-action button in the hero
@@ -41,7 +41,7 @@ title = "scverse x morphology"
     highlight     = "#b8d400"   # badges, chips, accent lines
 
 # ─── Suggested palette presets (copy one block to [params.theme] above) ──────
-# Morphology / orange: accent="#e5864b" accentDark="#b85d2a" gradientStart="#262fb5" gradientEnd="#e5864b" highlight="#fbb822"
+# Cell Painting / orange: accent="#e5864b" accentDark="#b85d2a" gradientStart="#262fb5" gradientEnd="#e5864b" highlight="#fbb822"
 # Spatial / teal:      accent="#40a9ff" accentDark="#0080dd" gradientStart="#262fb5" gradientEnd="#40a9ff" highlight="#6cf1a1"
 # Single-cell / pink:  accent="#de367b" accentDark="#a01d55" gradientStart="#262fb5" gradientEnd="#de367b" highlight="#969dea"
 

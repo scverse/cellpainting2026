@@ -1,10 +1,10 @@
-# scverse x morphology hackathon 2026
+# scverse x cellpainting hackathon 2026
 
 **September 2-4, 2026 - Max Delbrück Center (MDC), Campus Berlin-Buch**
 
-A hands-on hackathon at the intersection of image-based morphological profiling and the scverse ecosystem, jointly organised by scverse, CytoData Society, and EU-OPENSCREEN.
+A hands-on hackathon at the intersection of Cell Painting / image-based profiling and the scverse ecosystem, jointly organised by scverse, CytoData Society, and EU-OPENSCREEN.
 
-Full details, programme, and registration at **[scverse.org/morphology2026](https://scverse.org/morphology2026)**.
+Full details, programme, and registration at **[scverse.org/cellpainting2026](https://scverse.org/cellpainting2026)**.
 
 ---
 
@@ -29,5 +29,5 @@ Analysts and biological scientists experienced in Cell Painting workflows, softw
 
 ## Contact
 
-- Email: morphology2026@scverse.org
-- Zulip: [#2026-09: hackathon-morphology](https://scverse.zulipchat.com/#narrow/channel/591503-2026-09.3A-hackathon-morphology)
+- Email: cellpainting2026@scverse.org
+- Zulip: [#2026-09: hackathon-cellpainting](https://scverse.zulipchat.com/#narrow/channel/591503-2026-09.3A-hackathon-cellpainting)
