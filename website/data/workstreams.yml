@@ -2,7 +2,7 @@
 # Remove all entries to hide the section.
 # 'lead' is a GitHub username — their avatar is shown automatically.
 - title: "Image-based profiling with scverse tooling"
-  description: "Integrating Scanpy and AnnData into Cell Painting workflows: from raw image ingestion and single-cell segmentation through CellProfiler-compatible feature extraction to population-level profile aggregation, making morphological data fully interoperable with spatial and single-cell pipelines."
+  description: "Integrating Scanpy and AnnData into Cell Painting workflows: from raw image ingestion and single-cell segmentation through CellProfiler-compatible feature extraction to population-level profile aggregation, making Cell Painting data fully interoperable with single-cell and perturbation pipelines."
   lead: "timtreis"
 
 - title: "Single-cell perturbation tools for phenomics"
