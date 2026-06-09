@@ -1,6 +1,7 @@
 +++
-title = "scverse x Your Event 20XX"
-description = "A collaborative hackathon organised by scverse."
+title = "scverse x cellpainting 2026"
+description = "A collaborative hackathon bringing together the scverse, CytoData, and EU-OPENSCREEN communities for three days of hands-on development on Cell Painting and image-based profiling at the MDC Berlin."
+images = ["img/hero/scverse_symbol.png"]
 +++
 
 Recent advances in Cell Painting and image-based profiling have created an emerging overlap of biological questions addressed by separate computational ecosystems. This hackathon brings together the scverse, CytoData Society, and EU-OPENSCREEN communities for three days of hands-on development at the MDC Berlin, built around three concrete tracks spanning Cell Painting analysis with scverse tooling, single-cell perturbation tools, and scalable model training.
