@@ -1,23 +1,23 @@
 +++
 title = "Accommodation & travel"
 type = "local"
-description = "Accommodation recommendations and how to reach the Max Delbrück Center (MDC), Campus Berlin-Buch, for the scverse × cellpainting 2026 hackathon (September 2–4, 2026)."
+description = "Accommodation recommendations and how to reach the Max Delbrück Center (MDC), Campus Berlin-Buch, for the scverse cellpainting 2026 hackathon (September 2-4, 2026)."
 
 [params]
-  subtitle = "Where to stay and how to reach the MDC, Campus Berlin-Buch · September 2–4, 2026"
+  subtitle = "Where to stay and how to reach the MDC, Campus Berlin-Buch (September 2-4, 2026)"
 
   lead = """
-The venue is on the Campus Berlin-Buch in the north-east of Berlin. The campus is well connected by S-Bahn but a little outside the city centre, so there are broadly two sensible options: stay locally in Buch (quiet and close to the venue) or stay more centrally in Berlin and commute in each morning (about 35–45 minutes door-to-door). Both work well — it mostly comes down to whether you'd rather be near the action in the evenings or near the venue.
+The venue is on the Campus Berlin-Buch in the north-east of Berlin. The campus is well connected by S-Bahn but a little outside the city centre, so there are broadly two sensible options: stay locally in Buch (quiet and close to the venue) or stay more centrally in Berlin and commute in each morning (about 35-45 minutes door-to-door). Both work well; it mostly comes down to whether you'd rather be near the action in the evenings or near the venue.
 
 Walking and travel times below are approximate. Please double-check current prices and availability for early September yourself, as we have not pre-booked a room block.
 """
 
-  accommodationIntro = "Closest to the campus, but a quieter, more suburban setting — good if you'd rather have a short commute and an early night before the hackathon days."
+  accommodationIntro = "Closest to the campus, but a quieter, more suburban setting, good if you'd rather have a short commute and an early night before the hackathon days."
 
   # Non-hotel map markers. Hotels are pulled from data/accommodation.yml (any
   # entry with lat/lng). Coordinates verified via OpenStreetMap / MDC / Wikipedia.
   [[params.points]]
-    name = "MDC — Campus Berlin-Buch"
+    name = "MDC, Campus Berlin-Buch"
     kind = "venue"
     lat = 52.62445
     lng = 13.50193
@@ -27,19 +27,19 @@ Walking and travel times below are approximate. Please double-check current pric
     kind = "transit"
     lat = 52.63794
     lng = 13.49102
-    url = "https://sbahn.berlin/en/plan-a-journey/s2/"
+    url = "https://www.google.com/maps/dir/?api=1&origin=Berlin+Hauptbahnhof&destination=52.63794,13.49102&travelmode=transit"
   [[params.points]]
     name = "S Karow (S2)"
     kind = "transit"
     lat = 52.61500
     lng = 13.46920
-    url = "https://sbahn.berlin/en/plan-a-journey/s2/"
+    url = "https://www.google.com/maps/dir/?api=1&origin=Berlin+Hauptbahnhof&destination=52.61500,13.46920&travelmode=transit"
   [[params.points]]
     name = "Berlin Hauptbahnhof"
     kind = "transit"
     lat = 52.52506
     lng = 13.36952
-    url = "https://www.bahnhof.de/en/berlin-hbf"
+    url = "https://www.google.com/maps/search/?api=1&query=Berlin+Hauptbahnhof"
   [[params.points]]
     name = "BER Airport"
     kind = "airport"
@@ -52,9 +52,9 @@ Walking and travel times below are approximate. Please double-check current pric
 
 Many attendees prefer to stay in central Berlin for the food, atmosphere, and choice of hotels, and commute to the venue. The campus sits on the S-Bahn S2 line, so the easiest commute is to book somewhere on or near the S2.
 
-- Look for hotels near S2 stations such as Friedrichstraße, Nordbahnhof, Oranienburger Straße, Brandenburger Tor, Potsdamer Platz, Gesundbrunnen, Bornholmer Straße, or Pankow — these give you a direct ride north toward Berlin-Buch.
-- Allow roughly 35–45 minutes door-to-door depending on where you stay, including the S2 ride and the short bus 353 connection at the end.
-- Plan exact routes and times with the [BVG](https://www.bvg.de/en/connections) or [VBB](https://www.vbb.de/en/) journey planner — search for the destination "Campus Buch".
+- Look for hotels near S2 stations such as Friedrichstraße, Nordbahnhof, Oranienburger Straße, Brandenburger Tor, Potsdamer Platz, Gesundbrunnen, Bornholmer Straße, or Pankow, for a direct ride north toward Berlin-Buch.
+- Allow roughly 35-45 minutes door-to-door depending on where you stay, including the S2 ride and the short bus 353 connection at the end.
+- Plan exact routes and times with the [BVG](https://www.bvg.de/en/connections) or [VBB](https://www.vbb.de/en/) journey planner; search for the destination "Campus Buch".
 
 ## Getting to the campus
 
