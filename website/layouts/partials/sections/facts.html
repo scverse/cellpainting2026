@@ -54,11 +54,17 @@
                 {{ with .Site.Params.applicationDeadline }}Apply by {{ . }}{{ end }}
                 {{ with .Site.Params.acceptanceNotification }}<br /><span style="font-weight:400;color:#777">Notifications: {{ . }}</span>{{ end }}
               </div>
-              {{ with .Site.Params.cta }}{{ if .enabled }}
-                <a href="{{ .url }}" class="chip" target="_blank" rel="noopener">
-                  <i class="bi bi-box-arrow-up-right" aria-hidden="true"></i> {{ .label }}
-                </a>
-              {{ end }}{{ end }}
+              {{ with .Site.Params.cta }}
+                {{ if .enabled }}
+                  <a href="{{ .url }}" class="chip" target="_blank" rel="noopener">
+                    <i class="bi bi-box-arrow-up-right" aria-hidden="true"></i> {{ .label }}
+                  </a>
+                {{ else }}
+                  <span style="display:inline-flex;align-items:center;gap:0.4rem;font-weight:500;color:#777">
+                    <i class="bi bi-lock" aria-hidden="true"></i> Applications are now closed
+                  </span>
+                {{ end }}
+              {{ end }}
             </div>
           {{ end }}
 
