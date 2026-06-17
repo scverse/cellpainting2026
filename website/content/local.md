@@ -21,16 +21,19 @@ Walking and travel times below are approximate. Please double-check current pric
     kind = "venue"
     lat = 52.62445
     lng = 13.50193
+    url = "https://www.mdc-berlin.de/travel-directions"
   [[params.points]]
     name = "S Buch (S2)"
     kind = "transit"
     lat = 52.63794
     lng = 13.49102
+    url = "https://sbahn.berlin/en/plan-a-journey/s2/"
   [[params.points]]
     name = "S Karow (S2)"
     kind = "transit"
     lat = 52.61500
     lng = 13.46920
+    url = "https://sbahn.berlin/en/plan-a-journey/s2/"
 +++
 
 ## Staying central & commuting

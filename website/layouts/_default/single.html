@@ -64,9 +64,9 @@
       </div>
       <div id="local-map" class="local-map" role="img" aria-label="Map of the venue, recommended hotels, and nearby public transport"></div>
       <div class="map-legend">
-        <span><i class="map-legend__dot" data-kind="venue"></i> Venue</span>
-        <span><i class="map-legend__dot" data-kind="hotel"></i> Hotels</span>
-        <span><i class="map-legend__dot" data-kind="transit"></i> Public transport</span>
+        <span><i class="map-legend__pin bi bi-star-fill" data-kind="venue" aria-hidden="true"></i> Venue</span>
+        <span><i class="map-legend__pin bi bi-building-fill" data-kind="hotel" aria-hidden="true"></i> Hotels</span>
+        <span><i class="map-legend__pin bi bi-train-front-fill" data-kind="transit" aria-hidden="true"></i> Public transport</span>
       </div>
     </div>
   </section>
@@ -76,10 +76,10 @@
   <script>
     window.LOCAL_MAP_POINTS = [
       {{- range $points }}
-        { name: {{ .name }}, kind: {{ .kind }}, lat: {{ .lat }}, lng: {{ .lng }} },
+        { name: {{ .name }}, kind: {{ .kind }}, lat: {{ .lat }}, lng: {{ .lng }}, url: {{ .url }} },
       {{- end }}
       {{- range $hotels }}
-        { name: {{ .name }}, kind: "hotel", lat: {{ .lat }}, lng: {{ .lng }} },
+        { name: {{ .name }}, kind: "hotel", lat: {{ .lat }}, lng: {{ .lng }}, url: {{ .url }} },
       {{- end }}
     ];
   </script>
