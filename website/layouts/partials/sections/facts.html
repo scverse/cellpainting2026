@@ -8,11 +8,11 @@
         <div class="section-body">
           {{ .Content }}
         </div>
-        {{ with .Site.Params.cta }}
+        {{ with .Site.Params.cta }}{{ if .enabled }}
           <div class="mt-4">
             <a href="{{ .url }}" class="btn-accent">{{ .label }}</a>
           </div>
-        {{ end }}
+        {{ end }}{{ end }}
       </div>
 
       <!-- Facts cards -->

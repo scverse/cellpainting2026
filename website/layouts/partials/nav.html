@@ -30,11 +30,11 @@
           {{ if hugo.Data.schedule }}<li class="nav-item"><a class="nav-link" href="#schedule">Schedule</a></li>{{ end }}
           <li class="nav-item"><a class="nav-link" href="#organisers">Organisers</a></li>
           <li class="nav-item"><a class="nav-link" href="#contact">Contact</a></li>
-          {{ with .Site.Params.cta }}
+          {{ with .Site.Params.cta }}{{ if .enabled }}
             <li class="nav-item">
               <a class="nav-link nav-cta" href="{{ .url }}">{{ .label }}</a>
             </li>
-          {{ end }}
+          {{ end }}{{ end }}
         </ul>
       </div>
 

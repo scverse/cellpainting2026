@@ -7,11 +7,11 @@
         <p class="section-body">
           Whether you are an analyst or biological scientist experienced in Cell Painting, a software developer, computational biologist, or ML researcher: if you work at the intersection of Cell Painting and single-cell biology, this event is for you. Apply below or reach out with any questions.
         </p>
-        {{ with .Site.Params.cta }}
+        {{ with .Site.Params.cta }}{{ if .enabled }}
           <div class="mt-4">
             <a href="{{ .url }}" class="btn-accent">{{ .label }}</a>
           </div>
-        {{ end }}
+        {{ end }}{{ end }}
       </div>
 
       <div class="col-12 col-md-6">

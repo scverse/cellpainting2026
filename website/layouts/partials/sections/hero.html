@@ -44,9 +44,9 @@
     {{ end }}
 
     <div class="hero__actions">
-      {{ with .Site.Params.cta }}
+      {{ with .Site.Params.cta }}{{ if .enabled }}
         <a href="{{ .url }}" class="btn-accent">{{ .label }}</a>
-      {{ end }}
+      {{ end }}{{ end }}
       {{ with .Site.Params.calendarURL }}
         <a href="{{ . }}" class="btn-outline-accent" target="_blank" rel="noopener">
           <i class="bi bi-calendar-event" aria-hidden="true"></i> Add to calendar

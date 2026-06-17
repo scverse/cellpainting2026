@@ -25,8 +25,10 @@ title = "scverse x cellpainting"
   zulipChannel  = "https://scverse.zulipchat.com/#narrow/channel/591503-2026-09.3A-hackathon-cellpainting"
   linkedinURL   = "https://www.linkedin.com/company/scverse/"
 
-  # Primary call-to-action button in the hero
+  # Primary call-to-action button in the hero. Set enabled = false to hide all
+  # "Apply to join" buttons (e.g. once applications close).
   [params.cta]
+    enabled = true
     label = "Apply to join"
     url   = "https://luma.com/acc1jjuq"
 
