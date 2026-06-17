@@ -1,0 +1,88 @@
+{{ define "main" }}
+  {{/* Only the /local/ page (type=local) shows the accommodation grid + map. */}}
+  {{ $isLocal := eq .Type "local" }}
+  {{ $hotels := where (where .Site.Data.accommodation "lat" "!=" nil) "lng" "!=" nil }}
+  {{ $points := where (where .Params.points "lat" "!=" nil) "lng" "!=" nil }}
+  {{ $hasMap := and $isLocal (or $points $hotels) }}
+
+  <header class="page-header">
+    <div class="page-header__inner">
+      <h1 class="page-header__title gradient-text">{{ .Title }}</h1>
+      {{ with .Params.subtitle }}<p class="page-header__subtitle">{{ . }}</p>{{ end }}
+    </div>
+  </header>
+
+  {{ with .Params.lead }}
+  <section class="section">
+    <div class="section-inner">
+      <div class="prose">{{ . | markdownify }}</div>
+    </div>
+  </section>
+  {{ end }}
+
+  {{ if and $isLocal .Site.Data.accommodation }}
+  <section class="section section--alt">
+    <div class="section-inner">
+      <div class="section-header">
+        <p class="section-label">Where to stay</p>
+        <h2 class="section-title">Staying near the venue</h2>
+      </div>
+      {{ with .Params.accommodationIntro }}<p class="section-intro">{{ . }}</p>{{ end }}
+      <div class="facts-grid">
+        {{ range .Site.Data.accommodation }}
+          <div class="fact-card">
+            <div class="fact-card__icon"><i class="bi bi-building" aria-hidden="true"></i></div>
+            {{ with .area }}<div class="fact-card__label">{{ . }}</div>{{ end }}
+            <div class="fact-card__value">{{ .name }}</div>
+            {{ with .price }}<p class="fact-card__meta">{{ . }}</p>{{ end }}
+            {{ with .note }}<p class="fact-card__note">{{ . }}</p>{{ end }}
+            {{ with .phone }}<p class="fact-card__note"><i class="bi bi-telephone" aria-hidden="true"></i> {{ . }}</p>{{ end }}
+            {{ with .url }}
+              <a href="{{ . }}" class="chip" target="_blank" rel="noopener">
+                <i class="bi bi-box-arrow-up-right" aria-hidden="true"></i> Visit website
+              </a>
+            {{ end }}
+          </div>
+        {{ end }}
+      </div>
+    </div>
+  </section>
+  {{ end }}
+
+  <section class="section">
+    <div class="section-inner">
+      <div class="prose">{{ .Content }}</div>
+    </div>
+  </section>
+
+  {{ if $hasMap }}
+  <section class="section section--alt">
+    <div class="section-inner">
+      <div class="section-header">
+        <p class="section-label">Orientation</p>
+        <h2 class="section-title">Map</h2>
+      </div>
+      <div id="local-map" class="local-map" role="img" aria-label="Map of the venue, recommended hotels, and nearby public transport"></div>
+      <div class="map-legend">
+        <span><i class="map-legend__dot" data-kind="venue"></i> Venue</span>
+        <span><i class="map-legend__dot" data-kind="hotel"></i> Hotels</span>
+        <span><i class="map-legend__dot" data-kind="transit"></i> Public transport</span>
+      </div>
+    </div>
+  </section>
+
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script>
+    window.LOCAL_MAP_POINTS = [
+      {{- range $points }}
+        { name: {{ .name }}, kind: {{ .kind }}, lat: {{ .lat }}, lng: {{ .lng }} },
+      {{- end }}
+      {{- range $hotels }}
+        { name: {{ .name }}, kind: "hotel", lat: {{ .lat }}, lng: {{ .lng }} },
+      {{- end }}
+    ];
+  </script>
+  <script src="{{ "js/local-map.js" | relURL }}"></script>
+  {{ end }}
+{{ end }}

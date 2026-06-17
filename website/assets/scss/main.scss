@@ -837,6 +837,108 @@ h1, h2, h3, h4, h5, h6 {
   }
 }
 
+// ─── Sub-page header (e.g. /local/) ──────────────────────────────────────────
+// Dark banner that doubles as the backing for the transparent fixed mobile nav.
+.page-header {
+  background-color: #0a0a1a;
+  color: $white;
+  padding: 7rem 1.5rem 3.5rem;
+  text-align: center;
+
+  &__inner {
+    max-width: $max-width;
+    margin: 0 auto;
+  }
+
+  &__title {
+    font-size: clamp(2.25rem, 6vw, 4rem);
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    margin: 0;
+  }
+
+  &__subtitle {
+    font-size: clamp(1rem, 2vw, 1.25rem);
+    font-weight: 300;
+    opacity: 0.8;
+    max-width: 640px;
+    margin: 1rem auto 0;
+    line-height: 1.6;
+  }
+}
+
+// ─── Prose (markdown content on sub-pages) ────────────────────────────────────
+.prose {
+  font-size: 1.05rem;
+  color: $grey-mid;
+  line-height: 1.75;
+  max-width: 760px;
+
+  h2 {
+    font-size: clamp(1.4rem, 2.5vw, 1.9rem);
+    font-weight: 700;
+    color: $grey-dark;
+    margin: 2.5rem 0 1rem;
+  }
+
+  h3 {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: $grey-dark;
+    margin: 1.75rem 0 0.75rem;
+  }
+
+  ul { padding-left: 1.25rem; }
+  li { margin-bottom: 0.5rem; }
+}
+
+// Extra fact-card text used by accommodation cards
+.fact-card__meta {
+  font-weight: 600;
+  color: var(--accent);
+  margin: 0 0 0.5rem;
+}
+
+.fact-card__note {
+  font-size: 0.95rem;
+  color: $grey-mid;
+  line-height: 1.5;
+  margin: 0 0 0.75rem;
+}
+
+// ─── Map (/local/) ────────────────────────────────────────────────────────────
+.local-map {
+  height: 460px;
+  max-height: 70vh;
+  width: 100%;
+  border-radius: 0.75rem;
+  border: 1px solid $tile-bg2;
+  z-index: 0; // keep Leaflet panes below the sticky nav
+}
+
+.map-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  margin-top: 1rem;
+  font-size: 0.9rem;
+  color: $grey-mid;
+
+  span { display: inline-flex; align-items: center; gap: 0.4rem; }
+
+  &__dot {
+    width: 0.9rem;
+    height: 0.9rem;
+    border-radius: 50%;
+    border: 2px solid $white;
+    box-shadow: 0 0 0 1px $tile-bg2;
+
+    &[data-kind="venue"]   { background: var(--accent); }
+    &[data-kind="hotel"]   { background: var(--highlight); }
+    &[data-kind="transit"] { background: #555555; }
+  }
+}
+
 // ─── Responsive ───────────────────────────────────────────────────────────────
 @media (max-width: 50rem) {
   .hero {

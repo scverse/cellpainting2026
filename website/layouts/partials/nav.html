@@ -24,12 +24,15 @@
       </button>
 
       <div class="collapse navbar-collapse justify-content-end" id="site-nav-menu">
+        {{/* Anchors must point at the homepage when we're on a sub-page. */}}
+        {{ $home := cond .IsHome "" .Site.Home.RelPermalink }}
         <ul class="navbar-nav gap-1 align-items-lg-center">
-          <li class="nav-item"><a class="nav-link" href="#about">About</a></li>
-          {{ if hugo.Data.workstreams }}<li class="nav-item"><a class="nav-link" href="#workstreams">Workstreams</a></li>{{ end }}
-          {{ if hugo.Data.schedule }}<li class="nav-item"><a class="nav-link" href="#schedule">Schedule</a></li>{{ end }}
-          <li class="nav-item"><a class="nav-link" href="#organisers">Organisers</a></li>
-          <li class="nav-item"><a class="nav-link" href="#contact">Contact</a></li>
+          <li class="nav-item"><a class="nav-link" href="{{ $home }}#about">About</a></li>
+          {{ if hugo.Data.workstreams }}<li class="nav-item"><a class="nav-link" href="{{ $home }}#workstreams">Workstreams</a></li>{{ end }}
+          {{ if hugo.Data.schedule }}<li class="nav-item"><a class="nav-link" href="{{ $home }}#schedule">Schedule</a></li>{{ end }}
+          <li class="nav-item"><a class="nav-link" href="{{ $home }}#organisers">Organisers</a></li>
+          <li class="nav-item"><a class="nav-link" href="{{ $home }}#contact">Contact</a></li>
+          <li class="nav-item"><a class="nav-link nav-cta" href="{{ "local/" | relURL }}">Local info</a></li>
           {{ with .Site.Params.cta }}{{ if .enabled }}
             <li class="nav-item">
               <a class="nav-link nav-cta" href="{{ .url }}">{{ .label }}</a>
