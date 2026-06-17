@@ -67,6 +67,7 @@
         <span><i class="map-legend__pin bi bi-star-fill" data-kind="venue" aria-hidden="true"></i> Venue</span>
         <span><i class="map-legend__pin bi bi-building-fill" data-kind="hotel" aria-hidden="true"></i> Hotels</span>
         <span><i class="map-legend__pin bi bi-train-front-fill" data-kind="transit" aria-hidden="true"></i> Public transport</span>
+        <span><i class="map-legend__pin bi bi-airplane-fill" data-kind="airport" aria-hidden="true"></i> Airport</span>
       </div>
     </div>
   </section>
@@ -83,6 +84,7 @@
       {{- end }}
     ];
   </script>
-  <script src="{{ "js/local-map.js" | relURL }}"></script>
+  {{ $mapJS := resources.Get "js/local-map.js" | fingerprint }}
+  <script src="{{ $mapJS.RelPermalink }}"></script>
   {{ end }}
 {{ end }}

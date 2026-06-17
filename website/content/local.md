@@ -34,6 +34,18 @@ Walking and travel times below are approximate. Please double-check current pric
     lat = 52.61500
     lng = 13.46920
     url = "https://sbahn.berlin/en/plan-a-journey/s2/"
+  [[params.points]]
+    name = "Berlin Hauptbahnhof"
+    kind = "transit"
+    lat = 52.52506
+    lng = 13.36952
+    url = "https://www.bahnhof.de/en/berlin-hbf"
+  [[params.points]]
+    name = "BER Airport"
+    kind = "airport"
+    lat = 52.36660
+    lng = 13.50330
+    url = "https://ber.berlin-airport.de/en.html"
 +++
 
 ## Staying central & commuting

@@ -12,6 +12,7 @@
     venue: { color: "#e23744", icon: "bi-star-fill", size: 40 },
     hotel: { color: "#1f6feb", icon: "bi-building-fill", size: 32 },
     transit: { color: "#8e44ad", icon: "bi-train-front-fill", size: 32 },
+    airport: { color: "#ea580c", icon: "bi-airplane-fill", size: 32 },
   }
   const fallback = { color: "#111827", icon: "bi-geo-alt-fill", size: 32 }
 
