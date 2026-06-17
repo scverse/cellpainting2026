@@ -873,6 +873,7 @@ h1, h2, h3, h4, h5, h6 {
   color: $grey-mid;
   line-height: 1.75;
   max-width: 760px;
+  margin-inline: auto; // centre the reading column within the section
 
   h2 {
     font-size: clamp(1.4rem, 2.5vw, 1.9rem);
