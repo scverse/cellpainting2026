@@ -1,15 +1,31 @@
 // Leaflet map for the /local/ page. Markers come from window.LOCAL_MAP_POINTS
-// (emitted by single.html). circleMarkers avoid Leaflet's default-icon path issues.
+// (emitted by single.html). Each kind gets a distinct colour + Bootstrap icon
+// (icon shape + colour, so they stay distinguishable for colour-blind readers).
+// Keep the colours in sync with .map-legend__pin in main.scss.
 (function () {
   const el = document.getElementById("local-map")
   const pts = window.LOCAL_MAP_POINTS || []
   if (!el || !pts.length || typeof L === "undefined") return
 
-  const css = getComputedStyle(document.documentElement)
-  const colors = {
-    venue: css.getPropertyValue("--accent").trim() || "#262fb5",
-    hotel: css.getPropertyValue("--highlight").trim() || "#74c8fa",
-    transit: "#555555",
+  const accent = getComputedStyle(document.documentElement).getPropertyValue("--accent").trim() || "#6aaa2a"
+  const KINDS = {
+    venue: { color: accent, icon: "bi-star-fill", size: 40 },
+    hotel: { color: "#2b6cb0", icon: "bi-building-fill", size: 32 },
+    transit: { color: "#dd6b20", icon: "bi-train-front-fill", size: 32 },
+  }
+  const fallback = { color: "#555555", icon: "bi-geo-alt-fill", size: 32 }
+
+  function pin(kind) {
+    const c = KINDS[kind] || fallback
+    return L.divIcon({
+      className: "map-pin", // overrides Leaflet's default white-box .leaflet-div-icon
+      html:
+        '<span class="map-pin__badge" style="--pin:' + c.color + ';width:' + c.size + "px;height:" + c.size +
+        'px"><i class="bi ' + c.icon + '"></i></span>',
+      iconSize: [c.size, c.size],
+      iconAnchor: [c.size / 2, c.size / 2],
+      popupAnchor: [0, -c.size / 2],
+    })
   }
 
   const map = L.map(el, { scrollWheelZoom: false })
@@ -19,18 +35,20 @@
   }).addTo(map)
 
   const markers = pts.map((p) => {
-    // textContent (not an HTML string) so names with & / < / > can't break or inject markup.
+    // Build the popup via DOM nodes (textContent) so names with & / < / > can't
+    // break or inject markup. With a url, the name becomes an external link.
     const label = document.createElement("strong")
-    label.textContent = p.name
-    return L.circleMarker([p.lat, p.lng], {
-      radius: p.kind === "venue" ? 11 : 8,
-      color: "#fff",
-      weight: 2,
-      fillColor: colors[p.kind] || "#777",
-      fillOpacity: 1,
-    })
-      .addTo(map)
-      .bindPopup(label)
+    if (p.url) {
+      const a = document.createElement("a")
+      a.href = p.url
+      a.target = "_blank"
+      a.rel = "noopener"
+      a.textContent = p.name
+      label.appendChild(a)
+    } else {
+      label.textContent = p.name
+    }
+    return L.marker([p.lat, p.lng], { icon: pin(p.kind) }).addTo(map).bindPopup(label)
   })
 
   map.fitBounds(L.featureGroup(markers).getBounds().pad(0.25))

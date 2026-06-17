@@ -926,17 +926,39 @@ h1, h2, h3, h4, h5, h6 {
 
   span { display: inline-flex; align-items: center; gap: 0.4rem; }
 
-  &__dot {
-    width: 0.9rem;
-    height: 0.9rem;
+  // Mini version of the map pin. Keep colours in sync with KINDS in local-map.js.
+  &__pin {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.5rem;
+    height: 1.5rem;
     border-radius: 50%;
     border: 2px solid $white;
-    box-shadow: 0 0 0 1px $tile-bg2;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+    color: $white;
+    font-size: 0.8rem;
 
     &[data-kind="venue"]   { background: var(--accent); }
-    &[data-kind="hotel"]   { background: var(--highlight); }
-    &[data-kind="transit"] { background: #555555; }
+    &[data-kind="hotel"]   { background: #2b6cb0; }
+    &[data-kind="transit"] { background: #dd6b20; }
   }
+}
+
+// Map marker badge (Leaflet divIcon). --pin colour set inline per marker.
+.map-pin__badge {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  background: var(--pin);
+  color: $white;
+  border: 2px solid $white;
+  border-radius: 50%;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.45);
+  font-size: 0.95rem;
+  line-height: 1;
 }
 
 // ─── Responsive ───────────────────────────────────────────────────────────────
