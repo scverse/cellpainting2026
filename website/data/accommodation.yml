@@ -1,10 +1,10 @@
 # Accommodation recommendations shown on /local/.
 # Add, remove, or reorder entries freely. Only `name` is required; the rest are
 # optional and hidden when blank. Add lat/lng to also drop a pin on the map.
-# Prices are NOT pre-negotiated — attendees should check current rates themselves.
+# Prices are NOT pre-negotiated; attendees should check current rates themselves.
 
 - name: "Hotel Stadtgut Berlin-Buch"
-  area: "Berlin-Buch · ~10 min walk to S Buch, ~10–15 min to the campus"
+  area: "Berlin-Buch, ~10 min walk to S Buch (~10-15 min to the campus)"
   note: "Small 3-star hotel in a historic estate next to Schlosspark Buch, with an on-site restaurant. The closest hotel to both the S-Bahn and the campus."
   phone: "+49 30 94796580"
   url: "https://stadtgut-buch.de/"
@@ -12,17 +12,17 @@
   lng: 13.50004
 
 - name: "Schwanenburg Apartments"
-  area: "Panketal · bus 893 to S Buch from the door"
-  note: "Apartment-style rooms with kitchenettes — handy for longer or self-catered stays. Just over the city border in Brandenburg; travelling in via S Buch keeps you in the AB zone (see the fare note below)."
+  area: "Panketal, bus 893 to S Buch from the door"
+  note: "Apartment-style rooms with kitchenettes, handy for longer or self-catered stays. Just over the city border in Brandenburg; travelling in via S Buch keeps you in the AB zone (see the fare note below)."
   phone: "+49 160 8512146"
   url: "https://schwanenburg.de/en/"
   lat: 52.63126
   lng: 13.51884
 
 - name: "A25 Hotel Berlin-Karow"
-  area: "Berlin-Karow · ~8–10 min walk to S Karow (one stop before Buch)"
+  area: "Berlin-Karow, ~8-10 min walk to S Karow (one stop before Buch)"
   note: "Simple, budget-friendly hotel one S-Bahn stop down the S2 line, with free parking and an easy connection to the campus."
   phone: "+49 30 9420090"
-  url: "https://www.a25hotel-berlin.de/"
+  url: "https://www.google.com/maps/search/?api=1&query=A25+Hotel+Berlin-Karow"
   lat: 52.61021
   lng: 13.47460

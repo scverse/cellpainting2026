@@ -49,3 +49,7 @@ title = "scverse x cellpainting"
 
 [markup.goldmark.renderer]
   unsafe = true
+
+# Keep punctuation as authored (no auto em/en dashes or curly quotes).
+[markup.goldmark.extensions.typographer]
+  disable = true
