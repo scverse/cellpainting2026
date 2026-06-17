@@ -939,9 +939,9 @@ h1, h2, h3, h4, h5, h6 {
     color: $white;
     font-size: 0.8rem;
 
-    &[data-kind="venue"]   { background: var(--accent); }
-    &[data-kind="hotel"]   { background: #2b6cb0; }
-    &[data-kind="transit"] { background: #dd6b20; }
+    &[data-kind="venue"]   { background: #e23744; }
+    &[data-kind="hotel"]   { background: #1f6feb; }
+    &[data-kind="transit"] { background: #8e44ad; }
   }
 }
 
