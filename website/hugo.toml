@@ -28,7 +28,7 @@ title = "scverse x cellpainting"
   # Primary call-to-action button in the hero. Set enabled = false to hide all
   # "Apply to join" buttons (e.g. once applications close).
   [params.cta]
-    enabled = true
+    enabled = false
     label = "Apply to join"
     url   = "https://luma.com/acc1jjuq"
 

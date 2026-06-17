@@ -54,11 +54,11 @@
                 {{ with .Site.Params.applicationDeadline }}Apply by {{ . }}{{ end }}
                 {{ with .Site.Params.acceptanceNotification }}<br /><span style="font-weight:400;color:#777">Notifications: {{ . }}</span>{{ end }}
               </div>
-              {{ with .Site.Params.cta }}
+              {{ with .Site.Params.cta }}{{ if .enabled }}
                 <a href="{{ .url }}" class="chip" target="_blank" rel="noopener">
                   <i class="bi bi-box-arrow-up-right" aria-hidden="true"></i> {{ .label }}
                 </a>
-              {{ end }}
+              {{ end }}{{ end }}
             </div>
           {{ end }}
 
