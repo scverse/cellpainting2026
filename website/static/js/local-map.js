@@ -7,13 +7,13 @@
   const pts = window.LOCAL_MAP_POINTS || []
   if (!el || !pts.length || typeof L === "undefined") return
 
-  const accent = getComputedStyle(document.documentElement).getPropertyValue("--accent").trim() || "#6aaa2a"
+  // High-contrast hues that don't blend into OSM tiles (avoid green/yellow/grey).
   const KINDS = {
-    venue: { color: accent, icon: "bi-star-fill", size: 40 },
-    hotel: { color: "#2b6cb0", icon: "bi-building-fill", size: 32 },
-    transit: { color: "#dd6b20", icon: "bi-train-front-fill", size: 32 },
+    venue: { color: "#e23744", icon: "bi-star-fill", size: 40 },
+    hotel: { color: "#1f6feb", icon: "bi-building-fill", size: 32 },
+    transit: { color: "#8e44ad", icon: "bi-train-front-fill", size: 32 },
   }
-  const fallback = { color: "#555555", icon: "bi-geo-alt-fill", size: 32 }
+  const fallback = { color: "#111827", icon: "bi-geo-alt-fill", size: 32 }
 
   function pin(kind) {
     const c = KINDS[kind] || fallback
