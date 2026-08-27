@@ -1,4 +1,4 @@
-{{ if or hugo.Data.partners hugo.Data.sponsors }}
+{{ if or hugo.Data.partners hugo.Data.sponsors hugo.Data.supporters }}
 <section id="partners" class="section">
   <div class="section-inner">
     <div class="partners-sponsors-grid">
@@ -31,6 +31,28 @@
             <a href="{{ .url }}" class="sponsor-item" target="_blank" rel="noopener" title="{{ .name }}">
               <img src="{{ .logo | strings.TrimPrefix "/" | relURL }}" alt="{{ .name }}" loading="lazy" />
             </a>
+          {{ end }}
+        </div>
+      </div>
+      {{ end }}
+
+      {{ with hugo.Data.supporters }}
+      <div class="partners-sponsors-col partners-sponsors-col--full">
+        <div class="section-header">
+          <p class="section-label">Funding, venue &amp; organisation</p>
+          <h2 class="section-title">Supported by</h2>
+        </div>
+        <div class="supporters-grid">
+          {{ range . }}
+            {{ if .url }}
+            <a href="{{ .url }}" class="supporter-item" target="_blank" rel="noopener" title="{{ .name }}">
+              <img src="{{ .logo | strings.TrimPrefix "/" | relURL }}" alt="{{ .name }}" loading="lazy" />
+            </a>
+            {{ else }}
+            <span class="supporter-item" title="{{ .name }}">
+              <img src="{{ .logo | strings.TrimPrefix "/" | relURL }}" alt="{{ .name }}" loading="lazy" />
+            </span>
+            {{ end }}
           {{ end }}
         </div>
       </div>
