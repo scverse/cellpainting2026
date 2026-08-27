@@ -745,6 +745,42 @@ h1, h2, h3, h4, h5, h6 {
   }
 }
 
+// ─── Supporters (funders / venue / organisational support) ───────────────────
+.partners-sponsors-col--full {
+  grid-column: 1 / -1;
+}
+
+.supporters-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5rem 3rem;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+// Institutional / EU logos have strict usage rules: shown full-colour, no filter.
+.supporter-item {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 80px;
+  text-decoration: none;
+  opacity: 0.9;
+  transition: opacity 200ms ease;
+
+  img {
+    max-height: 80px;
+    max-width: 220px;
+    width: auto;
+    height: auto;
+    object-fit: contain;
+  }
+
+  &:hover {
+    opacity: 1;
+  }
+}
+
 // ─── Contact ──────────────────────────────────────────────────────────────────
 .contact-links {
   display: flex;
@@ -993,6 +1029,19 @@ h1, h2, h3, h4, h5, h6 {
   .partners-grid,
   .sponsors-grid {
     gap: 1.5rem;
+  }
+
+  .supporters-grid {
+    gap: 1.25rem 2rem;
+  }
+
+  .supporter-item {
+    height: 64px;
+
+    img {
+      max-height: 64px;
+      max-width: 170px;
+    }
   }
 
   .schedule-tabs {

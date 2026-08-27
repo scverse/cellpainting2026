@@ -1,0 +1,19 @@
+# Organisations supporting the hackathon (funding, venue, organisational help).
+# Rendered under "Supported by" — deliberately NOT "Sponsors": the impulse grant
+# that part-funds catering does not permit sponsorship.
+# 'logo' path is relative to static/. Leave 'url' empty to render unlinked.
+- name: "impulse"
+  logo: "/img/supporters/logo_impulse.png"
+  url: "https://www.eu-openscreen.eu/impulse-overview.html"
+
+- name: "Funded by the European Union"
+  logo: "/img/supporters/logo_funded_by_eu.png"
+  url: "https://european-union.europa.eu/"
+
+- name: "Max Delbrück Center (MDC)"
+  logo: "/img/supporters/logo_mdc.png"
+  url: "https://www.mdc-berlin.de/"
+
+- name: "Leibniz-Forschungsinstitut für Molekulare Pharmakologie (FMP)"
+  logo: "/img/supporters/logo_fmp.png"
+  url: "https://www.leibniz-fmp.de/"
