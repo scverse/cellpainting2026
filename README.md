@@ -12,11 +12,12 @@ Full details, programme, and registration at **[scverse.org/cellpainting2026](ht
 
 Each workstream has its own README with background, open questions, datasets and how to get started.
 
-- [WS1: Analysing CellProfiler output with scverse](ws1_cellprofiler_x_scverse) — what CellProfiler produces, how to convert it into AnnData and SpatialData, and which scverse tools then apply.
+- [WS1: Analysing CellProfiler output with scverse](ws1_cellprofiler_x_scverse) — how CellProfiler should export in the first place, a specified single-cell AnnData object and the `cp2adata` reader for it, a CellProfiler reader for `spatialdata-io`, and an `ExportToAnnData` plugin that skips the conversion entirely.
 - [WS2: Optical pooled screens in scverse](ws2_ops_in_scverse) — how to represent sequencing cycles and plate-scale screens so that images, masks and the per-cell table live in one object.
 - [WS3: Uncertainty quantification for Cell Painting](ws3_uq_in_cellprofiling) — which UQ methods work on morphological profiles, whether their uncertainties can be trusted, and how to expose them in AnnData.
 - [WS4: Cross-modal integration of morphology and transcriptomics](ws4_multiomics) — aligning Cell Painting profiles with matched single-cell RNA-seq, and asking what each modality adds. Developed in a [separate repository](https://github.com/Arkkienkeli/hackathon_crossmodal_stream).
 - [WS5: AI-driven single-cell image phenotyping with scPortrait](ws5_scportrait) — generative models of cell morphology, interactive exploration of image-based phenotypes, and agentic image-processing workflows.
+- [WS6: Classical single-cell tooling on morphology data](ws6_perturbation_tooling) — which parts of the single-cell perturbation stack transfer to morphological profiles, whether the competing measures of perturbation strength agree at single-cell and well level, and which transcriptomic assumptions quietly break.
 
 ---
 

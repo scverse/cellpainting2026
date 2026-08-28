@@ -1,12 +1,111 @@
 # WS1: Analysing CellProfiler output with scverse
 
+**Lead:** [@timtreis](https://github.com/timtreis)
+
 ## Introduction
 
-In this workstream, we will explore how we can best connect the output of typical CellProfiler workflows to the scverse analysis and modeling ecosystem. Since most scverse tools are built around AnnData, we will focus on how to convert CellProfiler output into AnnData objects, and what metadata we can extract from CellProfiler pipelines to enrich our analysis. For this, we will have to evaluate the following aspects:
+CellProfiler is where most Cell Painting data starts, and scverse is where we would like it to end
+up. Between the two sits a conversion step that everyone reimplements and nobody has specified. This
+workstream closes that gap: deciding **what CellProfiler should export in the first place**, agreeing
+**what the resulting object looks like**, building the readers, and asking whether the round-trip
+through CSV files is necessary at all.
 
-- WS1A) What are the typical outputs of CellProfiler and which output settings are most useful for downstream analysis? Can we define a narrow set of "optimal" output settings that will allow us to extract the most useful information for downstream analysis? Here we can aim for either just features and metadata (aiming at `AnnData`) or additionally including images and segmentation masks (aiming at `SpatialData`).
-- WS1B) How can we convert CellProfiler output into AnnData objects? What are the best practices for this conversion, and what metadata should we include to ensure that the AnnData objects are informative and useful for downstream analysis? This could involve writing some form of "cellprofiler2anndata" package to automate this conversion process.
-- WS1C) What scverse tools are most useful for analyzing CellProfiler output? How can we leverage the existing scverse ecosystem to perform meaningful analyses on CellProfiler data, and what new tools or methods might be needed to fully exploit the potential of this data?
+### WS1A) How should we export from CellProfiler?
+CellProfiler ships exactly two export modules — `ExportToSpreadsheet` and `ExportToDatabase` — and
+between them they emit wildly different things depending on configuration. Which settings actually
+carry downstream value? Can we define a narrow, recommended set that preserves what analysis needs
+and drops what it doesn't?
+
+**We run CellProfiler ourselves.** Everyone installs it and exports the same test plate under
+different configurations, then compares what comes out. That is the fastest way to make the question
+concrete, and it means the plugin work later has a live CellProfiler to test against.
+⚠️ Budget Wednesday morning for installation — this is the single biggest schedule risk in WS1.
+
+### WS1B) The object spec and `cp2adata`
+The following are **decided**; the open questions are marked.
+
+- **One row per cell.** The compartments (`Cells`, `Cytoplasm`, `Nuclei`, …) are *not* separate
+  objects — they belong to the same cell and should be analysed jointly, so their features sit side
+  by side as columns of one observation.
+- **The compartment lives in the feature name**, and is parsed out into structured `.var` columns
+  alongside object / family / measurement / channel / parameter. `var_names` stay verbatim as the
+  index so a mis-parse is visible rather than destructive.
+- **The primary object is configurable.** Default is to join at the cell; a user can also read only
+  `Nuclei`, only `Cells`, and so on.
+- **Global object ID: `plate_well_site_objectnumber`.** Deterministic, readable, and survives
+  concatenating plates — unlike `ImageNumber`, which is only unique within a run.
+- **Single-cell rows are the primary output.** Aggregation is explicitly *not* cp2adata's job; it
+  belongs to pycytominer or [WS6](../ws6_perturbation_tooling/).
+- **Two input shapes by Friday:** naive pooled `ExportToSpreadsheet` CSVs (what most labs have) and
+  the Cell Painting Gallery per-site directory layout. SQLite from `ExportToDatabase` and
+  already-aggregated parquet are explicitly **out of scope** for now.
+- **Home:** a new repo under the **scverse org**, `scverse/cp2adata`.
+
+🔴 **Open question — the 1:N problem, and the first thing to settle on Wednesday.**
+`RelateObjects` lets a cell have two nuclei, or none. **We keep all of it** — a second nucleus still
+belongs to that cell, so nothing is dropped or silently averaged. The likely encoding is
+`..._nucleus_...` when the relation is 1:1 and `..._nucleus<n>_...` when it isn't. **But that makes
+the feature space ragged across cells, which a fixed `.var` cannot express**, and we do not yet know
+what the right answer is. Decide it early, **error loudly on 1:N input until it is decided**, and
+find out what is realistically needed rather than guessing now.
+
+### WS1C) A CellProfiler reader for `spatialdata-io` — equal-priority second thread
+Images and segmentation masks, not just the feature table. **As a PR to
+[`spatialdata-io`](https://github.com/scverse/spatialdata-io)**, not a new package: that repo is
+active, has an established `readers/` pattern (codex, cosmx, curio, …), and a merged reader gets
+distribution and maintenance for free. It reuses `cp2adata` for the table so the fiddly CellProfiler
+column parsing is written exactly once.
+
+This runs as its own sub-team from Wednesday, in parallel with WS1B — not as a stretch goal.
+
+### WS1D) `ExportToAnnData` — a working CellProfiler plugin
+The conversion only exists because CellProfiler writes CSVs and something else reads them. An
+`ExportToAnnData` module writes the object straight out of the pipeline, with metadata still in scope
+rather than reconstructed from directory names afterwards. **Target: a working module in
+`active_plugins/`, not just a feasibility note.**
+
+**The mechanism already exists.** Every module implements `get_measurement_columns(pipeline)`
+declaring what it will produce, and `pipeline.get_measurement_columns()` aggregates across the
+pipeline. **`ExportToDatabase` builds its entire SQL schema this way**; `exporttospreadsheet.py:683`
+does the same to choose its columns; `pipeline.get_provider_dictionary("objectgroup")` enumerates
+upstream object names. Modules accumulate in `run(workspace)` and write once in `post_run(workspace)`.
+[`CellProfiler/CellProfiler-plugins`](https://github.com/CellProfiler/CellProfiler-plugins) is the
+community home — drop-in `.py` under `active_plugins/`, actively maintained.
+
+⚠️ **The hard part is distributed writes, not introspection.** CellProfiler processes image sets one
+at a time and, at plate scale, across parallel workers. `ExportToDatabase` copes because a database
+takes incremental inserts; `AnnData` wants a whole matrix. Either accumulate in memory (fine for one
+plate, hopeless for a screen) or write zarr-backed incrementally. Scope that honestly on day 1.
+
+### The spec is the artifact that outlives the hackathon
+A written `SPEC.md` in `scverse/cp2adata` — CellProfiler output → object slot, as a table — **plus a
+machine-checkable validator** so the spec is not just prose. Whether that is pydantic, pandera or
+something else is undecided; pick it on the day. The bar is that it should be **scientifically
+solid**: unambiguous enough that two people implementing against it produce the same object.
+
+**Why this isn't a Claude-in-an-hour job:** a CSV-to-AnnData converter is fifteen minutes of code.
+Deciding what *should* be exported, how compartments relate to an observation, and what a metadata
+contract has to guarantee is the work — and it outlives the hackathon. Everything downstream of us
+inherits these decisions.
+
+**Friday artifact:** `scverse/cp2adata` with `SPEC.md` and a validator, reading both input shapes;
+a `spatialdata-io` PR; and a working `ExportToAnnData` plugin.
+
+### ⚠️ WS1 is the largest track — cut in this order
+Four threads is more than one team can carry. If WS1 is under-subscribed, drop from the bottom:
+**WS1D (plugin) → WS1C (spatialdata-io) → WS1B's second input shape.** WS1A and a working
+single-shape `cp2adata` are the floor; everything else is upside.
+
+### Who this suits
+Anyone who **runs CellProfiler in practice** — WS1A is a domain question, not a programming one, and
+practitioner judgement is the scarce input. Paired with people comfortable with AnnData conventions
+for WS1B, SpatialData for WS1C, and one or two willing to write a CellProfiler module for WS1D. No
+machine learning anywhere in this workstream.
+
+### Scope boundary
+WS1 owns **the object**: getting data out of CellProfiler into a correct, agreed representation. What
+you then *compute* from that object belongs to [WS6](../ws6_perturbation_tooling/). The one interface
+is the object layout — agree it Wednesday morning and both tracks run in parallel.
 
 ## Test dataset
 
@@ -84,11 +183,23 @@ Note that this is one of three shapes in the wild, and a spec is only useful if 
 The invariant across all three is the object tables plus a plate/well/site key — except that key moves between the filesystem and the columns depending on who ran it. Pinning that down is arguably the real WS1A question.
 
 ## Getting Started
-- To get started with this workstream, we will need to get an overview of the typical outputs of CellProfiler and the settings that are most useful for downstream analysis. For this, we can [download small example datasets from the CellProfiler website](https://cellprofiler.org/examples) and explore what options we can export the results with. 
-- Once we have gained some perspective on this, we should formalize this into a spec each for AnnData and SpatialData and then build against that in future steps.
+
+**Order matters: WS1A → WS1B → WS1D is a dependency chain.** `cp2adata` works on *all existing*
+CellProfiler output — the whole Cell Painting Gallery, every lab's archive, version-independent. The
+plugin only helps data generated *after* people adopt it. So the converter has by far the larger
+addressable dataset **and** it is the plugin's dependency: once the spec exists, `ExportToAnnData`
+reduces to wiring an agreed schema into `post_run` rather than solving the same design problem twice,
+differently. WS1C can run in parallel once the `.var`/`.obs` contract is fixed.
+
+- Install CellProfiler first thing and export the test plate below under a few different
+  configurations. Comparing real outputs answers most of WS1A.
+- Settle the 1:N encoding before writing the reader. Error loudly until it is decided.
+- Prior art worth an hour before writing anything: `pycytominer` for the incumbent
+  normalisation/aggregation conventions, and `spatialdata-io`'s existing readers as the pattern a new
+  reader should follow.
 
 ## Relevant Resources
-- [CellProfiler](https://cellprofiler.org/)
-- [AnnData](https://anndata.readthedocs.io/en/latest/)
-- [scanpy](https://scanpy.readthedocs.io/en/stable/)
-- [spatialdata-io](https://spatialdata.readthedocs.io/en/latest/)
+
+- [CellProfiler](https://cellprofiler.org/) · [CellProfiler-plugins](https://github.com/CellProfiler/CellProfiler-plugins)
+- [AnnData](https://anndata.readthedocs.io/en/latest/) · [scanpy](https://scanpy.readthedocs.io/en/stable/) · [SpatialData](https://spatialdata.scverse.org/) · [spatialdata-io](https://github.com/scverse/spatialdata-io)
+- [pycytominer](https://pycytominer.readthedocs.io/) — incumbent conventions for profile handling
