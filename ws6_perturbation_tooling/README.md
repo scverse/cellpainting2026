@@ -1,138 +1,65 @@
 # WS6: Classical single-cell tooling on morphology data
 
-**Lead:** [@timtreis](https://github.com/timtreis) — **co-lead wanted**, recruited on the day.
-WS6C needs someone fluent in `pertpy` internals; see the note on Lukas/Lucas below.
+**Lead:** [@timtreis](https://github.com/timtreis) — co-lead wanted, someone fluent in `pertpy` internals.
 
 ## Introduction
 
-The scverse perturbation stack — `pertpy` above all — was built for transcriptomics, but almost
-nothing in it is intrinsically about genes. A Cell Painting experiment produces the same shape of
-object: a perturbation × feature matrix with plate/well/batch structure and negative controls. So a
-large part of that stack should transfer. The interesting question is not *whether* we can call these
-functions on morphology data — we obviously can — but **which of their assumptions survive contact
-with it, which silently break, and what has to change in normalisation and aggregation for the
-answers to be trustworthy.**
+In this workstream, we will find out how much of the single-cell perturbation stack actually works on morphological profiles. `pertpy` was built for transcriptomics, but almost nothing in it is intrinsically about genes: a Cell Painting experiment produces the same shape of object, a perturbation × feature matrix with plate/well/batch structure and negative controls. Calling these functions on a feature matrix is trivial; the question is which of their assumptions survive, which break quietly, and what has to change in normalisation and aggregation before the answers mean anything. For this, we will have to evaluate the following aspects:
 
-There is a third player. **[`scmorph`](https://github.com/edbiomedai/scmorph)** (Wagner, Warden,
-Khamseh & Beentjes, Edinburgh; [JOSS, Aug 2025](https://joss.theoj.org/papers/10.21105/joss.08324),
-MIT, v0.4.0) is an **AnnData-native** single-cell morphology package that has already made many of
-these adaptation decisions — batch correction, feature selection, aggregation, hit calling. It is not
-a competitor to be benchmarked away; it is **the existing answer to this workstream's question**, and
-our job is to find out how good an answer it is.
+- WS6A) Which parts of the stack transfer? For each capability, decide whether it applies as-is, needs adaptation, or is conceptually meaningless on morphology — and whether `scmorph` already does it. Candidates: distance metrics, `Mixscape`, `Augur`, `Milo`, `scGen`/`CPA`, and differential expression reinterpreted as differential *feature* abundance. `Mixscape` is the clearest gap: guide-efficiency filtering has an obvious optical-pooled-screening analogue and neither `scmorph` nor `pycytominer` offers it.
+- WS6B) Do the measures of perturbation strength agree? Image-based profiling ranks compounds with mAP (`copairs`); `pertpy` uses distance-based tests (E-distance, MMD); `scmorph` uses Mahalanobis and t-statistic distances to control. Nobody has put the three side by side. There is reason to think they disagree: in prior work on this data, `copairs` phenotypic activity called ~88 % of Target-2 compounds active while ~30 % of those sat perfectly mixed with the DMSO cluster, Mahalanobis separated them far more convincingly, and the `copairs` p-values looked poorly calibrated. Fix the decision rule before running anything — e.g. disagreement if Spearman ρ between any two rankings falls below 0.7, or if more than 10 % of compounds are called active by one method and inactive by another — and name the compounds where they differ, rather than reporting a correlation and stopping.
+- WS6C) Does aggregation change the answer? Run WS6B at well level and at single-cell level and compare. The metrics are defined on aggregated profiles, `pertpy`'s distance tests live at single-cell level, and no one has checked whether the ranking survives the move. This bears directly on whether single-cell morphology is worth its storage and compute.
+- WS6D) What breaks, and why? Morphology features are heavily correlated, scale-heterogeneous, and a few thousand engineered measurements rather than counts. No counts means no negative binomial; normalisation is per-plate against DMSO rather than library size; aggregation is to the well, not to a cell type. This part means reading `pertpy`'s source to find where a count model or a library-size assumption is baked in, and stating the minimal fix.
 
-So the shape of WS6 is: **three ecosystems that overlap in one contested zone, and nobody has ever put
-them side by side.**
+## Test dataset
 
-| Task | Transcriptomics (`pertpy`/`scanpy`) | Image profiling (`pycytominer`/`copairs`) | `scmorph` |
-|---|---|---|---|
-| Feature selection | highly variable genes | variance / correlation filters | `select_features`, `corr_features` (Pearson · Spearman · **Chatterjee's ξ**) |
-| Batch correction | Harmony, Combat, scVI | plate normalisation to DMSO | `remove_batch_effects`, `scale_by_batch` |
-| Perturbation strength | E-distance, MMD | **mAP** (`copairs`) | `aggregate_mahalanobis`, `tstat_distance` |
-| Hit calling | DE tests | mAP thresholds | `get_ks` (KS statistic) |
-| Guide QC | `Mixscape` | — | — |
+Both levels come from the same plate, so the WS6C comparison is controlled.
 
-## Scope — decided
+```bash
+# well level — 384 wells, pycytominer-normalised, 13 MB
+aws s3 cp --no-sign-request \
+  s3://cellpainting-gallery/cpg0016-jump/source_4/workspace/profiles/2021_04_26_Batch1/BR00117035/BR00117035.parquet .
 
-- **Both threads run: the full `pertpy` triage *and* the metric benchmark.** They suit different
-  people, so they can go in parallel rather than in sequence.
-- **Staffing decides the scope.** Advertise both at the workstream market; if fewer than ~6 people
-  sign up, **cut the triage and keep the benchmark** — the benchmark is where the finding is.
-- **Dataset: JUMP `cpg0016`.** This is where our prior copairs-vs-Mahalanobis evidence came from, so
-  new work extends existing evidence rather than starting cold.
-- **Run at both levels, and the gap between them is the finding.** Do the metrics rank perturbations
-  the same way on single cells as on aggregated wells? Nobody has asked, and it bears directly on
-  whether single-cell morphology is worth its cost.
-  - well-aggregated → `workspace/profiles/.../BR00117035.parquet` (13 MB)
-  - single-cell → a slice of `workspace/analysis/.../<plate>-<well>-<site>/` (~7.8 MB per well-site;
-    ~30 well-sites ≈ 250 MB), or [WS1](../ws1_cellprofiler_x_scverse/)'s `cp2adata` output once it exists
-- **`scmorph` is a comparator and a methodology source, not a contribution target.** No PRs to it.
-  Benchmark against its implementations, and read its explainer notebooks before designing ours.
-- **If the metrics genuinely disagree, the write-up is a blog post / scverse note**, not a paper.
+# single-cell level — per-object CellProfiler output, ~7.8 MB per well-site
+aws s3 cp --no-sign-request --recursive \
+  s3://cellpainting-gallery/cpg0016-jump/source_4/workspace/analysis/2021_04_26_Batch1/BR00117035/analysis/ \
+  ./sc/ --exclude "*" --include "BR00117035-A0[1-3]-*"     # ~30 well-sites, ~250 MB
+```
 
-## The questions
+Each well-site directory holds `Cells.csv`, `Cytoplasm.csv`, `Nuclei.csv` (~2.4 MB each), `Image.csv` and `Experiment.csv`. A whole plate is 3,456 well-sites — do not sync one. [WS1](../ws1_cellprofiler_x_scverse/)'s `cp2adata` will read these into `AnnData`; until it exists, load them directly.
 
-- **WS6A) Triage.** For each `pertpy` capability, decide: applicable as-is / needs adaptation /
-  conceptually meaningless on morphology — **and whether `scmorph` already does it.** One line of
-  justification each. Cheap, and it tells the group within a few hours where the remaining time
-  should go. `Mixscape` is the standout unclaimed candidate: guide-efficiency filtering has an
-  obvious optical-pooled-screening analogue and neither `scmorph` nor `pycytominer` offers it.
-- **WS6B) Do the perturbation-strength metrics agree?** The sharpest question here, and we already
-  have reason to think the answer is no. Benchmark **`copairs` mAP vs `pertpy` E-distance/MMD vs
-  `scmorph` Mahalanobis / t-stat distance** on one plate, and report where they disagree — not just
-  whether they correlate.
-  **Pre-commit to the decision rule before Wednesday:** e.g. *"we declare disagreement if Spearman ρ
-  between any two rankings is < 0.7, or if >10% of compounds are called active by one method and
-  inactive by another"*, and name the disagreeing compounds. Without a rule fixed in advance this
-  becomes 1.5 days of plots and a shrug.
-- **WS6C) What breaks, and why.** Morphology features are heavily correlated, scale-heterogeneous,
-  and a few thousand engineered measurements rather than counts. No counts means no negative
-  binomial. Normalisation is per-plate against DMSO, not library size. Aggregation is to the well,
-  not to a cell type. **This part requires reading `pertpy`'s source**, not just calling it — find
-  where a count model or a library-size assumption is baked in, and state the minimal fix.
+`scmorph.datasets.rohban2017()` is a one-call alternative for a first cell. WS3 uses the assembled cross-source profiles (`cpg0016-jump-assembled/source_all/…`, 2.8 GB) if this needs to scale beyond one plate.
 
-**Why this isn't a Claude-in-an-hour job:** calling these functions on a feature matrix is a few
-lines. The work is deciding which results are *meaningful*, producing evidence for that judgement,
-and writing down the adaptation rules. The deliverable is a defensible answer, not a wrapper.
+No GPU needed; everything here runs on a laptop.
 
-**Friday artifact:** the triage table (WS6A), one benchmark figure plus a named list of compounds
-where the metrics disagree (WS6B), and a short written list of concrete assumption violations with
-proposed fixes (WS6C). Stretch: a PR to whichever package the evidence says should change.
+## Reference: what already exists
 
-## Why we think the metrics disagree
+[`scmorph`](https://github.com/edbiomedai/scmorph) (Wagner, Warden, Khamseh & Beentjes, Edinburgh; [JOSS, Aug 2025](https://joss.theoj.org/papers/10.21105/joss.08324); MIT; v0.4.0) is AnnData-native and has already made many of these adaptation decisions. It is our comparator and a source of prior reasoning, **not** something we contribute to.
 
-Not a hunch. From our own prior analysis: `copairs` phenotypic activity called **~88% of Target-2
-compounds active, while ~30% of those sat perfectly mixed with the DMSO blob**; Mahalanobis distance
-separated them far more convincingly, and the `copairs` p-values looked poorly calibrated.
-Independently, `scmorph` shipped **`aggregate_mahalanobis`** as a first-class method. Two groups
-arrived at the same correction without talking to each other. That makes this a real open question
-about the field's default metric, not a tooling exercise.
+| | |
+| --- | --- |
+| Distances to control | `pp.aggregate_mahalanobis`, `pp.tstat_distance`, `pp.aggregate_ttest`, `pp.aggregate_pc` |
+| Hit calling | `tl.get_ks` (KS statistic) |
+| Feature selection | `pp.select_features`, `pp.corr_features` — Pearson, Spearman and Chatterjee's ξ (Lin & Han 2023), the last to catch *non-linearly* correlated features |
+| Batch correction | `pp.remove_batch_effects`, `pp.scale_by_batch` |
+| Scope limit | continuous, non-radial features only; trajectory inference shells out to R |
 
-## Prior work — this has been circling for nine months
+Its `docs/notebooks/` are worth an hour before designing our comparison — `correlation_comparison`, `why_scone`, `hit_calling` and `scalability` are explicit justifications of method choices, and the cheapest way to avoid running a comparison someone has already shown is uninformative.
 
-- **Notion, 2026-07-02** — logged as *WS7, "Perturbation Tooling on Cell Painting Data"*: apply
-  perturbation-scoring tools (PrEPI, NVIDIA) built for transcriptomics to Cell Painting; what works,
-  what breaks, how normalisation/aggregation must change. Action item *"Ask [Lucas] to prepare
-  perturbation tooling track"* — **still unchecked**.
-- **Zulip, 2026-06-30** — prep-lead list: *"Reusing Perturbation tooling → Lukas? will ask"*. No
-  confirmation ever appeared in the channel.
-- **Origin meeting, 2025-12-18** — "existing methods (trajectory inference, perturbation models)
-  could be adapted for morphological data"; a gap named as **"highly variable features" for
-  morphology**; and *"SEMorph exists as prior art but limited in scope — better to adjust scanpy
-  directly"*. ⚠️ **"SEMorph" is almost certainly a mis-transcription of `scmorph`, and that verdict
-  is stale** — it predates the JOSS paper and v0.4.0. Re-make the call against the current version.
-  The named HVG gap is also partly closed already, by Chatterjee-based `select_features`.
-
-⚠️ **Unresolved:** the records name both *Lukas* (Zulip; `pertpy`'s author) and *Lucas* (Notion; the
-PrEPI author at NVIDIA). Possibly one person mis-transcribed, possibly two. Nobody was ever confirmed
-as lead, and this ambiguity is a plausible reason the ask was never made. **Resolve the name first.**
-
-## Scope boundaries
-
-- **Not** WS3/UQ: uncertainty quantification also uses distances, but WS6 asks whether the *point
-  estimate* of perturbation strength is right, not how uncertain it is. If both tracks run, agree a
-  shared distance implementation on day 1 so the results are comparable.
-- **Not** WS1: WS1 owns getting CellProfiler output *into* `AnnData`. WS6 starts from an existing
-  `AnnData` and never touches raw images.
-- Not building a new package. If something is missing, the output is a PR to `pertpy` or `scmorph`.
+Note that `scmorph` shipped Mahalanobis as a first-class method independently of the prior work quoted in WS6B. Two groups converging on the same correction is the reason WS6B is a real question rather than a tooling exercise.
 
 ## Getting Started
 
-- Fastest possible start, no conversion and no images — the Cell Painting Gallery's finished
-  pycytominer profiles for one 384-well plate:
-  ```bash
-  aws s3 cp --no-sign-request \
-    s3://cellpainting-gallery/cpg0016-jump/source_4/workspace/profiles/2021_04_26_Batch1/BR00117035/BR00117035.parquet .
-  ```
-  13 MB. This track runs on a laptop even if the cluster is down.
-- `scmorph` ships example data — `scmorph.datasets.rohban2017()` — for an even faster first cell.
-- Do WS6A first and timebox it to Wednesday afternoon.
-- Later, swap in the `AnnData` from [WS1](../ws1_cellprofiler_x_scverse/) and check the conclusions
-  survive a different object layout.
+- WS6A first, timeboxed to Wednesday afternoon: a triage table is cheap and tells the group where the remaining time should go.
+- Start from the 13 MB parquet — it needs no conversion and works even if the cluster does not.
+- Write the WS6B decision rule down before producing any numbers.
+- Whatever survives should end up as a function that takes an AnnData and returns one, plus a short write-up. If the metrics genuinely disagree, that is a blog post or an scverse note, not a paper.
+- If fewer than about six people join, drop WS6A and keep the benchmark.
 
 ## Relevant Resources
 
 - [pertpy](https://pertpy.readthedocs.io/) · [scanpy](https://scanpy.readthedocs.io/en/stable/) · [AnnData](https://anndata.readthedocs.io/en/latest/)
 - [scmorph](https://github.com/edbiomedai/scmorph) · [docs](https://scmorph.readthedocs.io) · [JOSS paper](https://joss.theoj.org/papers/10.21105/joss.08324)
-- [pycytominer](https://pycytominer.readthedocs.io/) — incumbent normalisation/aggregation conventions
-- [copairs](https://github.com/cytomining/copairs) — mAP-based perturbation scoring, the field's default
-- Chatterjee's ξ — Lin & Han (2023), implemented as `scmorph.pp.correlation.xim`
+- [pycytominer](https://pycytominer.readthedocs.io/) — incumbent normalisation and aggregation conventions
+- [copairs](https://github.com/cytomining/copairs) — mAP-based perturbation scoring
+- Lin & Han (2023) — Chatterjee's ξ, implemented as `scmorph.pp.correlation.xim`
