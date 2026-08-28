@@ -482,7 +482,12 @@ h1, h2, h3, h4, h5, h6 {
 // ─── Workstreams ──────────────────────────────────────────────────────────────
 .workstreams-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  // Never more than three across, so five cards land as 3 + 2 rather than 4 + 1.
+  // The max() keeps the min track at a third of the row until 260px stops fitting.
+  grid-template-columns: repeat(
+    auto-fit,
+    minmax(#{"max(260px, (100% - 2.5rem) / 3)"}, 1fr)
+  );
   gap: 1.25rem;
 }
 

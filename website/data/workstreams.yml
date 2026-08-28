@@ -1,14 +1,22 @@
 # Each workstream appears as a card on the homepage.
 # Remove all entries to hide the section.
 # 'lead' is a GitHub username — their avatar is shown automatically.
-- title: "Image-based profiling with scverse tooling"
-  description: "Integrating Scanpy and AnnData into Cell Painting workflows: from raw image ingestion and single-cell segmentation through CellProfiler-compatible feature extraction to population-level profile aggregation, making Cell Painting data fully interoperable with single-cell and perturbation pipelines."
+- title: "Analysing CellProfiler output with scverse"
+  description: "Connecting typical CellProfiler workflows to the scverse ecosystem: working out which output settings carry the most downstream value, converting features and metadata into AnnData and SpatialData, and establishing which scverse tools are useful once the data is there."
   lead: "timtreis"
 
-- title: "Single-cell perturbation tools for phenomics"
-  description: "Applying pertpy and related tools to large-scale resources such as JUMP-CP and the EU-OPENSCREEN compound collections, exploring multi-omics integration with matched Perturb-seq data, cross-modal mechanism-of-action inference, and uncertainty quantification for actionable hit prioritisation."
-  lead: ""
+- title: "Optical pooled screens in scverse"
+  description: "Bringing optical pooled screening into scverse, where a phenotypic imaging round is paired with several rounds of in-situ sequencing. Deciding how to represent sequencing cycles and their registration, what breaks at plate scale, and what the ecosystem offers once images, masks and the per-cell table live in one object."
+  lead: "LucaMarconato"
 
-- title: "Scalable model training with scverse data standards"
-  description: "Tackling infrastructure challenges of modern Cell Painting resources spanning hundreds of thousands of compounds. Using scverse-native tooling such as annbatch with the EU-OPENSCREEN ECBL dataset to produce proof-of-concept ML pipelines ready for post-event follow-up."
-  lead: ""
+- title: "Uncertainty quantification for Cell Painting"
+  description: "Attaching defensible confidence estimates to predictions made from morphological profiles. Comparing Bayesian and conformal approaches on profiles stored in AnnData, testing whether their uncertainties survive compound- and site-level splits, and asking how an uncertainty should be exposed to downstream users."
+  lead: "hanyangii"
+
+- title: "Cross-modal integration of morphology and transcriptomics"
+  description: "Aligning Cell Painting profiles from LINCS and EU-OPENSCREEN with matched single-cell transcriptomics, using drug response as a supervision signal. Asking whether the two modalities are complementary or redundant, and which gene programs are encoded in a morphological phenotype."
+  lead: "Arkkienkeli"
+
+- title: "AI-driven single-cell image phenotyping with scPortrait"
+  description: "Extending the scverse single-cell image toolkit scPortrait towards generative modelling of cell morphology, interactive visualisation of image-based phenotypes, and agentic image-processing workflows."
+  lead: "nik-as"
