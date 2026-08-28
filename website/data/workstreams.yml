@@ -2,7 +2,7 @@
 # Remove all entries to hide the section.
 # 'lead' is a GitHub username — their avatar is shown automatically.
 - title: "Analysing CellProfiler output with scverse"
-  description: "Connecting typical CellProfiler workflows to the scverse ecosystem: working out which output settings carry the most downstream value, converting features and metadata into AnnData and SpatialData, and establishing which scverse tools are useful once the data is there."
+  description: "Connecting typical CellProfiler workflows to the scverse ecosystem: running CellProfiler ourselves to work out which export settings carry real downstream value, specifying a single-cell AnnData representation and building the reader for it, adding a CellProfiler reader to spatialdata-io for images and masks, and writing an export plugin that skips the conversion step altogether."
   lead: "timtreis"
 
 - title: "Optical pooled screens in scverse"
@@ -20,3 +20,7 @@
 - title: "AI-driven single-cell image phenotyping with scPortrait"
   description: "Extending the scverse single-cell image toolkit scPortrait towards generative modelling of cell morphology, interactive visualisation of image-based phenotypes, and agentic image-processing workflows."
   lead: "nik-as"
+
+- title: "Classical single-cell tooling on morphology data"
+  description: "Testing how far the single-cell perturbation stack carries over to morphological profiles. Triaging which pertpy capabilities transfer, benchmarking the competing measures of perturbation strength against each other at both single-cell and well level, and pinning down which transcriptomic assumptions quietly break on image-derived features."
+  lead: "timtreis"
