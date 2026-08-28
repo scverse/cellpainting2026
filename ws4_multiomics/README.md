@@ -1,18 +1,31 @@
 # WS4: Cross-modal integration of morphology and transcriptomics
 
-The work happens in a separate repository: [`Arkkienkeli/hackathon_crossmodal_stream`](https://github.com/Arkkienkeli/hackathon_crossmodal_stream) (Nikita Moshkov). Clone that; this page is the orientation.
+**Lead:** [@Arkkienkeli](https://github.com/Arkkienkeli) (Nikita Moshkov)
 
-## Introduction
+The work happens in a separate repository: [`Arkkienkeli/hackathon_crossmodal_stream`](https://github.com/Arkkienkeli/hackathon_crossmodal_stream). Clone that; this page is the orientation.
 
-In this workstream, we will explore what Cell Painting morphology and single-cell transcriptomics each tell us about a compound, and whether the two can be aligned into one representation. The same compounds have been profiled both ways — morphologically in LINCS (A549) and EU-OPENSCREEN (HepG2), transcriptomically in TAHOE — so compound identity and mechanism annotation give us a pairing signal without any shared cells. For this, we will have to evaluate the following aspects:
+The same compounds have been profiled morphologically in LINCS (A549) and EU-OPENSCREEN (HepG2), and transcriptomically in TAHOE. Compound identity and mechanism annotation pair them without any shared cells.
 
-- WS4A) Do the two modalities agree about which compounds resemble each other? The baseline notebooks answer this with a Mantel test between compound–compound distance matrices and with silhouette scores per mechanism class in each space. Where they disagree, is that a real difference in what the assays measure, or an artefact of how each embedding was built?
-- WS4B) Can drug response supervise an alignment? Rather than comparing two independently built PCA spaces, learn a mapping that puts a compound's morphological and transcriptomic profiles in the same place. What supervision is available — compound identity, mechanism class, dose, response measurements — and how much of it is needed before a joint space beats either modality alone?
-- WS4C) Which genes and gene programs are encoded in a morphological phenotype? If a mapping works in one direction, morphology should be predictive of expression. Which transcriptional programs are recoverable from images, and which are invisible to them?
+- WS4A) Do the two modalities agree about which compounds resemble each other? The baseline notebooks answer this with a Mantel test between compound–compound distance matrices and silhouette scores per mechanism class. Where they disagree, is that a real difference in what the assays measure or an artefact of how each embedding was built?
+- WS4B) Can drug response supervise an alignment? Rather than comparing two independently built PCA spaces, learn a mapping that puts a compound's morphological and transcriptomic profiles in the same place. How much supervision is needed before a joint space beats either modality alone?
+- WS4C) Which gene programs are encoded in a morphological phenotype? If a mapping works in one direction, morphology should be predictive of expression. Which programs are recoverable from images, and which are invisible to them?
+
+### Requirements
+- [x] Morphology profiles committed to the workstream repo (~40 MB `.h5ad`)
+- [x] Compound pairing already done: 86 of 94 A549 and 117 of 120 HepG2 drugs have both embeddings
+- [ ] **Ask Nikita what response measurements exist beyond compound identity and mechanism class.** This decides how much of WS4B is supervised alignment and how much is unsupervised, and it should be answered before the event rather than on Wednesday.
+- [ ] Expression `.h5ad` files downloaded from Drive (they are large; the scanpy PCA step is the slow part)
+- [ ] Decide whether to keep the `unclear` class in `moa_fine`
+
+### Deliverable
+- A supervised joint embedding evaluated against both single-modality baselines, using the existing Mantel and silhouette measurements as the comparison.
+
+### Stretch goal
+- WS4C, and a cross-cell-line comparison over the 46 compounds and 17 mechanism classes LINCS and EU-OPENSCREEN share.
 
 ## Test dataset
 
-The morphology profiles are committed to the workstream repo (~40 MB of `.h5ad`); the single-cell expression data and the original CellProfiler output are on [Google Drive](https://drive.google.com/drive/folders/1gV6iEnXW3vElA99yDqQPQp6fvKbbzVKE?usp=sharing) and have to be downloaded separately.
+Expression data and the original CellProfiler output are on [Google Drive](https://drive.google.com/drive/folders/1gV6iEnXW3vElA99yDqQPQp6fvKbbzVKE?usp=sharing) and download separately.
 
 ### Morphology (in the repo)
 
@@ -33,7 +46,7 @@ Both are `mad_robustize`-normalized, feature-selected CellProfiler profiles. Not
 
 ### What pairs the two
 
-Every file carries `Metadata_Drug` and `Metadata_moa_fine`, a 21-class coarse mechanism label. Name matching was already done: 86 of 94 A549 drugs and 117 of 120 HepG2 drugs have both a morphology and an expression embedding. LINCS and EU-OPENSCREEN share 46 compounds and 17 mechanism classes with each other, which makes a cross-cell-line comparison possible as well. `moa_fine` includes an `unclear` class — decide early whether to keep it.
+Every file carries `Metadata_Drug` and `Metadata_moa_fine`, a 21-class coarse mechanism label.
 
 ## Reference: what the baseline notebooks already establish
 
@@ -48,7 +61,8 @@ One result to keep in mind before interpreting anything: PC1 of the HepG2 expres
 - Clone [`Arkkienkeli/hackathon_crossmodal_stream`](https://github.com/Arkkienkeli/hackathon_crossmodal_stream), download the expression `.h5ad` files from the Drive link into it, and run the two integration notebooks end to end.
 - They need `anndata`, `scanpy`, `pycytominer`, `copairs`, `scikit-learn`, `umap-learn`. The expression files are large — expect the scanpy PCA step to be the slow part.
 - The notebooks stop at two independently built PCA spaces compared post hoc. WS4B starts where they stop.
-- Ask Nikita what response measurements exist beyond compound identity and mechanism class; that determines how much of WS4B is supervised alignment and how much is unsupervised.
+
+This workstream suits people doing representation learning or multi-omics integration. No imaging experience needed; the morphology arrives as a feature table.
 
 ## Relevant Resources
 
