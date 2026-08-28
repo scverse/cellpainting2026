@@ -1,14 +1,28 @@
 # WS5: AI-driven single-cell image phenotyping with scPortrait
 
-## Introduction
+**Lead:** [@nik-as](https://github.com/nik-as)
 
-In this workstream, we will extend [scPortrait](https://github.com/MannLabs/scPortrait), a toolkit that turns raw microscopy into single-cell representations. It already covers the path from images to a per-cell dataset — stitching, segmentation, extraction of masked single-cell crops, featurization, and export of cutting contours for laser microdissection — and it is scverse-native throughout: images, masks and annotations live in a `SpatialData` store, and the single-cell images live in `.h5sc`, an AnnData file with a `(cells, channels, height, width)` tensor in `obsm`. That makes it a good base for things it does not yet do. For this, we will have to evaluate the following aspects:
+[scPortrait](https://github.com/MannLabs/scPortrait) already takes raw microscopy to a per-cell AnnData: `.h5sc` holds a `(cells, channels, height, width)` tensor in `obsm`, images and masks sit in a `SpatialData` store. What it cannot do is generate morphology, show you the cell behind a point in an embedding, or be driven by anything except hand-written Python.
 
-- WS5A) Can scPortrait generate cell morphology, not just describe it? There are pretrained perturbation-conditioned image models (MorphoDiff, CellFlux, IMPA) and pretrained embedding models (OpenPhenom, scDINO), but every one of them reads its own folder-of-images format. None is AnnData-native. What would it take to train or run one against `.h5sc` directly, and does scPortrait's `VAEBase` scaffold or a pretrained backbone give a better starting point?
-- WS5B) What does interactive exploration of image-based phenotypes look like? scPortrait has a static matplotlib crop gallery (`pl.cell_grid`) and a `Project.view_sdata()` hook into napari-spatialdata, which today registers three widgets — scatter, view, annotation. Clicking a point in an embedding and seeing that cell's crop is the obvious missing move. Is that a napari widget, a browser tool (Vitessce and TissUUmaps both read AnnData/SpatialData), or something else?
-- WS5C) Can an agent drive an image-processing workflow? scPortrait is Python-API plus a YAML config keyed by class name, with no CLI. `napari-mcp` already exposes a viewer over 16 MCP tools, and there are MCP servers for AnnData and scanpy but none for SpatialData or for scPortrait. What is the right surface to expose — configuration, quality control, method selection — and how would we tell whether the agent's choices were any good?
+- WS5A) Can scPortrait generate morphology rather than only describe it? Pretrained perturbation-conditioned image models (MorphoDiff, CellFlux, IMPA) and embedding models (OpenPhenom, scDINO) all read their own folder-of-images format and none is AnnData-native. Running one against `.h5sc` directly is the question; `ConvNeXtFeaturizer` is a ~110-line template for wiring a backbone in.
+- WS5B) What does interactive exploration look like? scPortrait has a static matplotlib crop gallery (`pl.cell_grid`) and a `Project.view_sdata()` hook into napari-spatialdata. Clicking a point in an embedding and seeing that cell's crop is the missing move, as a napari widget or in the browser.
+- WS5C) Can an agent drive an image-processing workflow? scPortrait is a Python API plus a YAML config keyed by class name, with no CLI. `napari-mcp` exposes a viewer over 16 MCP tools, and MCP servers exist for AnnData and scanpy but not SpatialData or scPortrait.
 
-## Getting started
+### Requirements
+- [x] Ready-made data ships with the package
+- [x] OpenPhenom, CellFlux and MorphoDiff publish weights
+- [ ] **Pick one of A/B/C on Wednesday morning.** Three directions is one team's worth of scope only if two are dropped.
+- [ ] Decide what "the agent's choices were good" means before building WS5C
+
+### Deliverable
+- One of: a pretrained backbone running against `.h5sc`, a crop-on-click widget, or an MCP surface over a scPortrait project.
+
+### Stretch goal
+- Any of the well-specified open issues below, shipped as PRs.
+
+⚠️ scPortrait is Linux/macOS only (Python ≥ 3.11). Training a generative model from scratch is not realistic in three days; run a pretrained one.
+
+## Getting Started
 
 ```bash
 pip install scportrait          # Apache-2.0, Python >=3.11, Linux/macOS
@@ -25,15 +39,27 @@ scportrait.data.dataset_1()            # ~44 MB raw images, the walkthrough data
 - `ConvNeXtFeaturizer` (`pipeline/featurization.py`) is a ~110-line template for wiring a new backbone in, and the cleanest thing to copy for WS5A.
 - Everything downstream is an AnnData, so scanpy, pertpy and the rest of scverse apply once you have features.
 
+This workstream suits people comfortable with PyTorch, napari or MCP tooling. Not an entry point for anyone new to deep learning.
+
 ## Reference
 
 ### Where scPortrait is today
 
-v1.8.0 on PyPI (May 2026), 110 stars, Apache-2.0, preprint [Mädler, Schmacke et al. 2025](https://doi.org/10.1101/2025.09.22.677590), successor to SPARCSpy. Segmentation is Cellpose-only (pinned `<4`; a Cellpose 4 / `cpsam` backend adapter is open as PR #406). Featurizers are `CellFeaturizer` (classical intensity and shape statistics), `MLClusterClassifier` and `EnsembleClassifier` (inference from Lightning checkpoints), and `ConvNeXtFeaturizer` (2048-d embeddings from a HuggingFace ConvNeXt). Models in-tree include VGG variants, a convolutional autoencoder and `VAEBase`; one pretrained checkpoint ships, a binary autophagy classifier from the SPARCS paper. There is no self-supervised backbone, no CLI, and no mention of generative models, agents or foundation models anywhere in the repo.
+v1.8.0 on PyPI (May 2026), 110 stars, Apache-2.0, preprint [Mädler, Schmacke et al. 2025](https://doi.org/10.1101/2025.09.22.677590), successor to SPARCSpy. Segmentation is Cellpose-only (pinned `<4`; a `cpsam` adapter is open as PR #406). Featurizers: `CellFeaturizer` (intensity and shape statistics), `MLClusterClassifier` and `EnsembleClassifier` (inference from Lightning checkpoints), `ConvNeXtFeaturizer` (2048-d HuggingFace ConvNeXt embeddings). In-tree models include VGG variants, a convolutional autoencoder and `VAEBase`; one pretrained checkpoint ships. No self-supervised backbone, no CLI, and no mention of generative models, agents or foundation models anywhere in the repo.
 
 ### What exists elsewhere, and how usable it is
 
-For WS5A, [OpenPhenom](https://huggingface.co/recursionpharma/OpenPhenom) is the easiest win — a channel-agnostic masked autoencoder that accepts 1/4/6/11 channels and loads in three lines, though under a non-commercial licence; [CellFlux](https://github.com/yuhui-zh15/CellFlux) (MIT, flow matching) and [MorphoDiff](https://github.com/bowang-lab/MorphoDiff) (Apache-2.0, latent diffusion) both publish weights; [IMPA](https://github.com/theislab/IMPA) is by a scPortrait co-author but has no licence file and has been dormant since January 2025. For WS5B, [napari-spatialdata](https://github.com/scverse/napari-spatialdata) has hover-highlight and lasso selection on its scatter widget but no crop gallery; [Vitessce](https://github.com/vitessce/vitessce-python) reads AnnData-Zarr and SpatialData-Zarr in the browser but needs an on-disk store, not an in-memory object; [TissUUmaps](https://github.com/TissUUmaps/TissUUmaps) reads `.h5ad` including `obsm["X_umap"]` directly. For WS5C, [napari-mcp](https://github.com/royerlab/napari-mcp) is the shortest path to a working demo and lists Claude Code as a supported client; [bia-bob](https://github.com/haesleinhuepf/bia-bob) is a mature Jupyter copilot with a local Ollama option; [anndata-mcp](https://github.com/biocontext-ai/anndata-mcp) and the [scmcphub](https://github.com/scmcphub) servers cover parts of scverse. Worth reading before claiming an agent works: [MicroVQA](https://jmhb0.github.io/microvqa) (expert microscopy VQA, best models around 53 %) and [arXiv:2608.05266](https://arxiv.org/abs/2608.05266), which finds that agent performance on microscopy benchmarks does not generalise to unseen tasks.
+| For  | Option                                                                                   | Usability                                                            |
+| ---- | ------------------------------------------------------------------------------------------ | ---------------------------------------------------------------------- |
+| WS5A | [OpenPhenom](https://huggingface.co/recursionpharma/OpenPhenom)                            | easiest win: channel-agnostic MAE, 1/4/6/11 channels, loads in three lines. Non-commercial licence |
+| WS5A | [CellFlux](https://github.com/yuhui-zh15/CellFlux) (MIT, flow matching) · [MorphoDiff](https://github.com/bowang-lab/MorphoDiff) (Apache-2.0, latent diffusion) | both publish weights                                                  |
+| WS5A | [IMPA](https://github.com/theislab/IMPA)                                                   | by a scPortrait co-author, but no licence file and dormant since Jan 2025 |
+| WS5B | [napari-spatialdata](https://github.com/scverse/napari-spatialdata)                        | hover-highlight and lasso on the scatter widget, no crop gallery      |
+| WS5B | [Vitessce](https://github.com/vitessce/vitessce-python) · [TissUUmaps](https://github.com/TissUUmaps/TissUUmaps) | Vitessce needs an on-disk store; TissUUmaps reads `.h5ad` incl. `obsm["X_umap"]` directly |
+| WS5C | [napari-mcp](https://github.com/royerlab/napari-mcp)                                       | shortest path to a demo, lists Claude Code as a supported client      |
+| WS5C | [bia-bob](https://github.com/haesleinhuepf/bia-bob) · [anndata-mcp](https://github.com/biocontext-ai/anndata-mcp) · [scmcphub](https://github.com/scmcphub) | mature Jupyter copilot with local Ollama; MCP servers covering parts of scverse |
+
+Read before claiming an agent works: [MicroVQA](https://jmhb0.github.io/microvqa) (expert microscopy VQA, best models ~53 %) and [arXiv:2608.05266](https://arxiv.org/abs/2608.05266), which finds agent performance on microscopy benchmarks does not generalise to unseen tasks.
 
 ### If you would rather ship something small
 

@@ -1,20 +1,32 @@
 # WS2: Optical pooled screens in scverse
 
-## Introduction
+**Lead:** [@LucaMarconato](https://github.com/LucaMarconato)
 
-In this workstream, we will explore how optical pooled screening (OPS) data can be handled with scverse tooling. An OPS experiment pairs a phenotypic imaging round with several rounds of in-situ sequencing that assign a guide to every cell, so the natural target is a `SpatialData` object holding the images, the segmentation masks and the per-cell table together. Nobody does this today — every OPS toolkit ships its own storage layer, and SpatialData has no notion of a sequencing cycle. For this, we will have to evaluate the following aspects:
+An OPS experiment pairs a phenotypic imaging round with several rounds of in-situ sequencing that assign a guide to every cell, so the natural target is one `SpatialData` object holding images, masks and the per-cell table. Nobody does this today: every OPS toolkit ships its own storage layer, and SpatialData has no notion of a sequencing cycle.
 
-- WS2A) How should the sequencing cycles be represented? SpatialData images are `(c, y, x)` or `(c, z, y, x)`, so there is no cycle axis to put them on, and each cycle usually carries its own registration transform. Options seen in the wild are to stack cycles into the channel axis with names like `cycle03_G`, to make one image element per cycle sharing a coordinate system, or to follow the OME-NGFF plate spec and keep one image per acquisition per well. Which of these survives contact with a pipeline that has to write intermediates at every step?
-- WS2B) What happens at screen scale? A 384-well plate at 12 cycles is thousands of image elements before tiles are counted, and the plate/well hierarchy has no representation in SpatialData at all — element names cannot even contain a slash. Where are the limits, and can conventions work around them or do we need changes upstream?
-- WS2C) Which scverse tools are useful once the data is in? Candidates are `squidpy.experimental.im.calculate_image_features` for cp_measure features, pertpy and copairs for guide-level statistics, spatialdata-plot and napari-spatialdata for inspection. Is the round trip better than what the OPS pipelines already do themselves, and where is it worse?
+- WS2A) How should sequencing cycles be represented? SpatialData images are `(c, y, x)` or `(c, z, y, x)`, so there is no cycle axis, and each cycle carries its own registration transform. Three options exist in the wild: stack cycles into the channel axis as `cycle03_G`, one image element per cycle sharing a coordinate system, or the OME-NGFF plate spec's one image per acquisition per well.
+- WS2B) What happens at screen scale? A 384-well plate at 12 cycles is thousands of image elements before tiles, and the plate/well hierarchy has no representation in SpatialData at all — element names cannot contain a slash.
+- WS2C) Which scverse tools earn their place once the data is in? `squidpy.experimental.im.calculate_image_features` for cp_measure features, pertpy and copairs for guide-level statistics, spatialdata-plot and napari-spatialdata for inspection. Is the round trip better than what the OPS pipelines already do?
+
+### Requirements
+- [x] A small screen with phenotype round, sequencing cycles and guide library (Option A)
+- [x] SCALLOPS storage layer is ~1,000 lines across ~50 call sites, small enough to replace in three days
+- [ ] **Confirm SCALLOPS co-installs with `spatialdata`.** It needs Python ≥ 3.12 and pulls tensorflow, itk-elastix and stardist. First thing to find out.
+- [ ] Decide where the code lands: a `spatialdata-io` reader, a SCALLOPS storage backend, or a new package
+
+### Deliverable
+- A SpatialData representation of one OPS tile series that survives a full SCALLOPS run, plus a written verdict on WS2A with the constraints that forced it.
+
+### Stretch goal
+- SCALLOPS reading and writing a SpatialData store, with its own test suite passing against it.
+
+⚠️ SCALLOPS and scPortrait are Linux/macOS only. Windows users cannot run this workstream natively.
 
 ## Test dataset
 
-We want a screen small enough to process end to end during the hackathon, with the phenotype round, the sequencing cycles and the guide library all present.
-
 ### Option A — SCALLOPS `feldman_2019_small()` (~756 MB)
 
-[SCALLOPS](https://github.com/Genentech/scallops) is Genentech's OPS toolkit and the most complete open pipeline; it ships a small dataset that its CLI, tests and notebooks already run on.
+[SCALLOPS](https://github.com/Genentech/scallops) is Genentech's OPS toolkit and the most complete open pipeline. It ships a small dataset its CLI, tests and notebooks already run on.
 
 ```python
 from scallops.datasets import feldman_2019_small
@@ -27,19 +39,17 @@ path = feldman_2019_small()   # pooch download on first call
 | Source   | Feldman et al. 2019, HeLa p65 translocation screen                                                                                                                                                                       |
 | Pipeline | the [example commands](https://scallops.readthedocs.io/en/latest/example_commands.html) run illumination correction → stitching → elastix registration → segmentation → spot detection → base calling → features → merge |
 
-⚠️ SCALLOPS needs Python ≥ 3.12 and pulls tensorflow, itk-elastix and stardist. Whether it co-installs with `spatialdata` is the first thing to find out.
-
 ### Option B — Brieflow small test data (1.4 GB)
 
 ```bash
 curl -L -o small_test_data.zip https://zenodo.org/records/15276612/files/small_test_data.zip
 ```
 
-ND2 files from the Cheeseman lab: 1 plate, wells A1 and A2, 3 sequencing tiles × 11 cycles, 3 phenotype tiles, a 20,445-guide library. Runs through the [Brieflow](https://github.com/cheeseman-lab/brieflow) Snakemake workflow in about 15 minutes and produces TIFFs and parquet instead of zarr — a useful second layout if the question is what a general reader has to cope with.
+ND2 files from the Cheeseman lab: 1 plate, wells A1 and A2, 3 sequencing tiles × 11 cycles, 3 phenotype tiles, a 20,445-guide library. Runs through the [Brieflow](https://github.com/cheeseman-lab/brieflow) Snakemake workflow in ~15 minutes, producing TIFFs and parquet rather than zarr. A useful second layout for what a general reader must cope with.
 
 ### Option C — cpg0021-periscope, a few tiles (Cell Painting Gallery)
 
-A genome-wide screen (Ramezani et al. 2025) in A549 and HeLa: 12 cycles, 316 tiles per well at 10×, over 1,000 at 20×. Use it for the scale questions in WS2B.
+A genome-wide screen (Ramezani et al. 2025) in A549 and HeLa: 12 cycles, 316 tiles per well at 10×, over 1,000 at 20×. For the WS2B scale questions.
 
 ```bash
 # one 10x sequencing tile, cycle 1 (22 MB); loop n=1..12 for the full series
@@ -47,13 +57,11 @@ aws s3 cp --no-sign-request \
   "s3://cellpainting-gallery/cpg0021-periscope/broad/images/20200805_A549_WG_Screen/images/CP186A/10X_c1-SBS-1/Well1_Point1_0000_ChannelDAPI,Cy3,A594,Cy5,Cy7_Seq0000.nd2" .
 ```
 
-Sequencing images live under `10X_c{n}-SBS-{n}/`, phenotype under `20X_CP_{plate}/`, illumination functions under `illum/`, profiles under `workspace/`. The dataset is 56 TB in total, so pull tiles, never a plate.
+Sequencing images live under `10X_c{n}-SBS-{n}/`, phenotype under `20X_CP_{plate}/`. The dataset is 56 TB, so pull tiles, never a plate.
 
 ### Option D — CZI OPS data portal
 
-<!-- TODO(tim): portal URL + download command. Searched 2026-08-28: chanzuckerberg/ops-schema scopes raw acquisition images out (aggregated OME-Zarr, example crops and h5ad only), and the CZ Biohub OPS Explorer (https://biohub.ai/ops-explorer) is alpha with no download surfaced. -->
-
-To be added.
+Not usable yet. `chanzuckerberg/ops-schema` scopes raw acquisition images out, and the CZ Biohub OPS Explorer is alpha with no download surfaced (checked 2026-08-28).
 
 ## Reference: how cycles are stored today
 
@@ -70,9 +78,11 @@ Background reading: [spatialdata#247](https://github.com/scverse/spatialdata/iss
 
 ## Getting Started
 
-- Install SCALLOPS, run the example commands on Option A once unmodified, and keep the output as a reference.
-- Read `scallops/experiment/elements.py` and `scallops/zarr_io.py` — the storage layer is about 1,000 lines across ~50 call sites, small enough to replace during a hackathon. One concrete way into WS2A and WS2B is to make SCALLOPS write and read a SpatialData store instead, splitting and re-stacking the `t` axis at the storage boundary so its processing code is untouched, then running its test suite against the result.
-- Everything that has to be worked around is a finding — collect them as issues with reproducers rather than only as code.
+- Install SCALLOPS and run the example commands on Option A unmodified, keeping the output as a reference.
+- Read `scallops/experiment/elements.py` and `scallops/zarr_io.py`. One concrete way into WS2A and WS2B: make SCALLOPS write and read a SpatialData store, splitting and re-stacking the `t` axis at the storage boundary so its processing code is untouched, then run its test suite against the result.
+- Everything that has to be worked around is a finding. Collect them as issues with reproducers, not only as code.
+
+This workstream suits people who run OPS, and anyone who wants to stress-test SpatialData against a format it was not designed for.
 
 ## Relevant Resources
 

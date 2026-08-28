@@ -21,9 +21,20 @@ Each workstream has its own README with background, open questions, datasets and
 
 ---
 
+## Before you travel
+
+- **Download your workstream's data before you arrive.** Several datasets are hundreds of MB to a few GB, and the first morning is not the time to discover that.
+- **Compute:** cloud instances with Jupyter, CPU and GPU, on a dedicated network at the venue. External accounts cannot be provisioned before the event, so anything you want to run on day one should also run on your laptop. Most workstreams are laptop-sized by design.
+- ⚠️ **Windows:** scPortrait (WS5) and SCALLOPS (WS2) are Linux/macOS only. WSL or a VM if that is your machine.
+- **WS1 participants install CellProfiler**, so do it before you fly if you can.
+
+---
+
 ## Who should attend
 
-Analysts and biological scientists experienced in Cell Painting workflows, software developers, computational biologists, and ML researchers. Domain expertise is as critical as technical development. Tasks and project ideas will be tracked as GitHub issues in this repo.
+Analysts and biological scientists experienced in Cell Painting workflows, software developers, computational biologists, and ML researchers. **Domain expertise is as critical as technical development** — WS1 in particular opens with a question that needs people who run CellProfiler in practice, and no code at all.
+
+Each workstream README ends with a note on who it suits. Tasks are tracked as [GitHub issues](https://github.com/scverse/cellpainting2026/issues) in this repo, one per thread, and you can self-assign before the event.
 
 ---
 
