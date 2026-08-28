@@ -618,21 +618,6 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 // ─── Organisers ───────────────────────────────────────────────────────────────
-.organiser-group {
-  margin-bottom: 1.5rem;
-
-  &__name {
-    font-size: 0.75rem;
-    font-weight: 700;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    color: $grey-light;
-    margin-bottom: 0.6rem;
-    padding-bottom: 0.35rem;
-    border-bottom: 1px solid $tile-bg2;
-  }
-}
-
 .organisers-grid {
   display: flex;
   flex-wrap: wrap;

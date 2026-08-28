@@ -6,44 +6,39 @@
       <h2 class="section-title">Organisers</h2>
     </div>
 
-    {{ range .groups }}
-      <div class="organiser-group">
-        {{ with .name }}<div class="organiser-group__name">{{ . }}</div>{{ end }}
-        <div class="organisers-grid">
-          {{ range .members }}
-            {{ $href := "" }}
-            {{ if .website }}{{ $href = .website }}{{ else if .github }}{{ $href = printf "https://github.com/%s" .github }}{{ end }}
+    <div class="organisers-grid">
+      {{ range .members }}
+        {{ $href := "" }}
+        {{ if .website }}{{ $href = .website }}{{ else if .github }}{{ $href = printf "https://github.com/%s" .github }}{{ end }}
 
-            {{ if $href }}
-              <a href="{{ $href }}" class="organiser-card" target="_blank" rel="noopener">
-            {{ else }}
-              <div class="organiser-card">
-            {{ end }}
+        {{ if $href }}
+          <a href="{{ $href }}" class="organiser-card" target="_blank" rel="noopener">
+        {{ else }}
+          <div class="organiser-card">
+        {{ end }}
 
-              {{ if .github }}
-                <img
-                  class="organiser-card__avatar"
-                  src="https://github.com/{{ .github }}.png?size=80"
-                  alt="{{ .name }}"
-                  loading="lazy"
-                  width="40" height="40"
-                />
-              {{ else }}
-                <div class="organiser-card__avatar" style="display:flex;align-items:center;justify-content:center;">
-                  <i class="bi bi-person" style="color:#999;font-size:1.2rem;" aria-hidden="true"></i>
-                </div>
-              {{ end }}
-
-              <div>
-                <div class="organiser-card__name">{{ .name }}</div>
-                {{ with .affiliation }}<div class="organiser-card__affiliation">{{ . }}</div>{{ end }}
-              </div>
-
-            {{ if $href }}</a>{{ else }}</div>{{ end }}
+          {{ if .github }}
+            <img
+              class="organiser-card__avatar"
+              src="https://github.com/{{ .github }}.png?size=80"
+              alt="{{ .name }}"
+              loading="lazy"
+              width="40" height="40"
+            />
+          {{ else }}
+            <div class="organiser-card__avatar" style="display:flex;align-items:center;justify-content:center;">
+              <i class="bi bi-person" style="color:#999;font-size:1.2rem;" aria-hidden="true"></i>
+            </div>
           {{ end }}
-        </div>
-      </div>
-    {{ end }}
+
+          <div>
+            <div class="organiser-card__name">{{ .name }}</div>
+            {{ with .affiliation }}<div class="organiser-card__affiliation">{{ . }}</div>{{ end }}
+          </div>
+
+        {{ if $href }}</a>{{ else }}</div>{{ end }}
+      {{ end }}
+    </div>
   </div>
 </section>
 {{ end }}
