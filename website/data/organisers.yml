@@ -9,6 +9,11 @@ groups:
         github: "timtreis"
         website: ""
 
+      - name: "Muskan Hashim"
+        affiliation: "scverse / Helmholtz Munich"
+        github: "muskanhashim"
+        website: ""
+
   - name: "CytoData"
     members:
       - name: "Nikita Moshkov"
@@ -16,9 +21,33 @@ groups:
         github: "Arkkienkeli"
         website: ""
 
+      - name: "Loan Vulliard"
+        affiliation: "CytoData / DKFZ Heidelberg"
+        github: "koalive"
+        website: ""
+
   - name: "EU-OPENSCREEN"
     members:
       - name: "Christopher Schmied"
         affiliation: "EU-OPENSCREEN"
         github: "schmiedc"
+        website: ""
+
+  - name: "Max Delbrück Center"
+    members:
+      - name: "Mădălin Ionel Patrașcu"
+        affiliation: "BIMSB / MDC Berlin"
+        github: "pimi17"
+        website: ""
+
+  - name: "Bayer"
+    members:
+      - name: "Florian Huber"
+        affiliation: "Bayer"
+        github: "FloHu"
+        website: ""
+
+      - name: "Yunhee Jeong"
+        affiliation: "Bayer"
+        github: "hanyangii"
         website: ""
