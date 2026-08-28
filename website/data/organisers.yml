@@ -26,15 +26,13 @@ groups:
         github: "koalive"
         website: ""
 
-  - name: "EU-OPENSCREEN"
+  - name: "Campus Berlin-Buch"
     members:
       - name: "Christopher Schmied"
         affiliation: "EU-OPENSCREEN"
         github: "schmiedc"
         website: ""
 
-  - name: "Max Delbrück Center"
-    members:
       - name: "Mădălin Ionel Patrașcu"
         affiliation: "BIMSB / MDC Berlin"
         github: "pimi17"

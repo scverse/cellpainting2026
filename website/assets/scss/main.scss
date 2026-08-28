@@ -619,7 +619,7 @@ h1, h2, h3, h4, h5, h6 {
 
 // ─── Organisers ───────────────────────────────────────────────────────────────
 .organiser-group {
-  margin-bottom: 2.5rem;
+  margin-bottom: 1.5rem;
 
   &__name {
     font-size: 0.75rem;
@@ -627,8 +627,8 @@ h1, h2, h3, h4, h5, h6 {
     letter-spacing: 0.1em;
     text-transform: uppercase;
     color: $grey-light;
-    margin-bottom: 1.25rem;
-    padding-bottom: 0.5rem;
+    margin-bottom: 0.6rem;
+    padding-bottom: 0.35rem;
     border-bottom: 1px solid $tile-bg2;
   }
 }
@@ -646,8 +646,8 @@ h1, h2, h3, h4, h5, h6 {
   background: $white;
   border: 1px solid $tile-bg2;
   border-radius: 0.5rem;
-  padding: 0.75rem 1rem;
-  min-width: 200px;
+  padding: 0.5rem 0.85rem;
+  min-width: 190px;
   text-decoration: none;
   color: inherit;
   transition: box-shadow 150ms ease;
@@ -659,8 +659,8 @@ h1, h2, h3, h4, h5, h6 {
   }
 
   &__avatar {
-    width: 40px;
-    height: 40px;
+    width: 34px;
+    height: 34px;
     border-radius: 50%;
     object-fit: cover;
     background: $tile-bg2;
